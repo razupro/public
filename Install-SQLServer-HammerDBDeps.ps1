@@ -4,16 +4,14 @@
 # IMPORTANT: Download URLs for Microsoft products are subject to change.
 # ALWAYS VERIFY these URLs before running the script.
 #
-# Usage (Download from Internet - Default):
-# .\Install-SQLServer-HammerDBDeps.ps1 -sqlAdminUser "YourWindowsUsername" -saPassword "YourStrongSAPassword!"
-#
-# Or (Use Pre-Downloaded Local Installers):
+# Usage (Recommended - Use Pre-Downloaded Local SQL Server Installer):
+# To automate SQL Server installation, you MUST provide the path to a local SQL Server ISO or extracted installer.
 # .\Install-SQLServer-HammerDBDeps.ps1 `
 #   -sqlAdminUser "YourWindowsUsername" `
 #   -saPassword "YourStrongSAPassword!" `
-#   -sqlInstallerLocalPath "C:\Installers\SQL2022-SSEI-Dev.exe" `
-#   -odbcDriverLocalPath "C:\Installers\msodbcsql.msi" `
-#   -ssmsInstallerLocalPath "C:\Installers\SSMS-Setup-ENU.exe"
+#   -sqlInstallerLocalPath "C:\Installers\SQL2022-Developer.iso" ` # Path to your SQL Server ISO or setup.exe
+#   -odbcDriverLocalPath "C:\Installers\msodbcsql.msi" `          # Optional: Local path for ODBC driver
+#   -ssmsInstallerLocalPath "C:\Installers\SSMS-Setup-ENU.exe"     # Optional: Local path for SSMS
 
 [CmdletBinding()]
 param(
@@ -24,12 +22,16 @@ param(
     [string]$saPassword,
 
     # --- SQL Server Developer Edition Parameters ---
-    # Default URL for SQL Server 2022 Developer online installer. VERIFY THIS URL.
-    [string]$sqlInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=2215112&clcid=0x409&culture=en-us&country=US",
-    [string]$sqlInstallerFileName = "SQL2022-SSEI-Dev.exe",
-    [string]$sqlInstallerLocalPath = "", # Set this if you have the installer locally (e.g., "C:\Installers\SQL2022-SSEI-Dev.exe")
+    # !!! For automated installation, it is STRONGLY RECOMMENDED and often REQUIRED to provide a local path to the SQL Server ISO or extracted setup.exe.
+    [string]$sqlInstallerLocalPath = "", # Set this if you have the installer locally (e.g., "C:\Installers\SQL2022-Developer.iso" or "C:\Installers\SQL2022_extracted_media\setup.exe")
     [string]$sqlInstallPath = "C:\SQLServerInstall",
     [string]$instanceName = "MSSQLSERVER", # Default instance for Developer Edition. Change if you want a named instance.
+
+    # Default URL for SQL Server 2022 Developer online installer (used only if no local path provided, but requires manual intervention for setup)
+    # This URL is primarily for reference, as automated download of full media might not be silent.
+    [string]$sqlInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=2215112&clcid=0x409&culture=en-us&country=US",
+    [string]$sqlInstallerFileName = "SQL2022-SSEI-Dev.exe",
+
 
     # --- SSMS Parameters ---
     # Default URL for latest SSMS installer redirect link. VERIFY THIS URL.
@@ -55,7 +57,7 @@ if (-not (Test-Path $downloadsDir)) {
     Write-Host "Created download directory: $downloadsDir"
 }
 
-# --- Function to handle download or use local file ---
+# --- Function to handle download or use local file (for SSMS and ODBC) ---
 function Get-InstallerPath {
     param (
         [string]$url,
@@ -85,46 +87,70 @@ function Get-InstallerPath {
     }
 }
 
-# --- 1. Install SQL Server Developer Edition (Silent Installation - Two Stages) ---
+# --- 1. Install SQL Server Developer Edition (Silent Installation) ---
 Write-Host "Preparing SQL Server Developer Edition installation..."
 
-# Define the path where the full SQL Server installation media will be downloaded
-$sqlMediaDownloadPath = Join-Path $downloadsDir "SQLServerMedia"
-if (-not (Test-Path $sqlMediaDownloadPath)) {
-    New-Item -Path $sqlMediaDownloadPath -ItemType Directory -Force
-    Write-Host "Created SQL Server media download directory: $sqlMediaDownloadPath"
-}
+$sqlSetupExe = ""
+$mountedDriveLetter = ""
 
-# Get the path to the online SQL Server installer (SQL2022-SSEI-Dev.exe)
-$sqlOnlineInstaller = Get-InstallerPath -url $sqlInstallerUrl -fileName $sqlInstallerFileName -localPath $sqlInstallerLocalPath -targetDir $downloadsDir
-
-Write-Host "First stage: Downloading full SQL Server media using the online installer. This may take a while..."
-
-# Arguments for the online installer to download the media silently
-$onlineInstallerLogFile = "C:\SQLOnlineInstallerLog.txt"
-$onlineInstallerArguments = @(
-    "/DOWNLOAD"
-    "/MEDIALOCATION=`"$sqlMediaDownloadPath`""
-    "/quiet" # Attempt to run quietly if supported by the online installer version
-)
-
-Write-Host "Running online installer to download media: $sqlOnlineInstaller $($onlineInstallerArguments -join ' ')"
-$process = Start-Process -FilePath $sqlOnlineInstaller -ArgumentList $onlineInstallerArguments -Wait -PassThru -NoNewWindow
-if ($process.ExitCode -ne 0) {
-    Write-Error "SQL Server online installer failed to download media with exit code $($process.ExitCode). Check $onlineInstallerLogFile for details."
+# Handle local SQL Server installer path
+if (-not ([string]::IsNullOrEmpty($sqlInstallerLocalPath))) {
+    if (Test-Path $sqlInstallerLocalPath -PathType Leaf) { # Is it a file (e.g., .iso or .exe)?
+        $extension = [System.IO.Path]::GetExtension($sqlInstallerLocalPath)
+        if ($extension -eq ".iso") {
+            Write-Host "Mounting SQL Server ISO: $sqlInstallerLocalPath"
+            try {
+                $mountResult = Mount-DiskImage -ImagePath $sqlInstallerLocalPath -PassThru
+                $mountedDriveLetter = ($mountResult | Get-Volume).DriveLetter
+                if (-not ([string]::IsNullOrEmpty($mountedDriveLetter))) {
+                    $sqlSetupExe = Join-Path "$($mountedDriveLetter):\" "setup.exe"
+                    Write-Host "ISO mounted. Setup.exe expected at: $sqlSetupExe"
+                    if (-not (Test-Path $sqlSetupExe)) {
+                        Write-Error "Error: setup.exe not found on mounted ISO at '$sqlSetupExe'. ISO content may be incorrect."
+                        exit 1
+                    }
+                } else {
+                    Write-Error "Failed to get drive letter for mounted ISO."
+                    exit 1
+                }
+            }
+            catch {
+                Write-Error "Failed to mount ISO '$sqlInstallerLocalPath'. Error: $($_.Exception.Message)"
+                exit 1
+            }
+        } elseif ($extension -eq ".exe") {
+            Write-Host "Using local SQL Server executable: $sqlInstallerLocalPath"
+            $sqlSetupExe = $sqlInstallerLocalPath
+        } else {
+            Write-Error "Unsupported file type for SQL Server installer local path: $extension. Expected .iso or .exe."
+            exit 1
+        }
+    } elseif (Test-Path $sqlInstallerLocalPath -PathType Container) { # Is it a directory (extracted media)?
+        Write-Host "Using local SQL Server installation directory: $sqlInstallerLocalPath"
+        $sqlSetupExe = Join-Path $sqlInstallerLocalPath "setup.exe"
+        if (-not (Test-Path $sqlSetupExe)) {
+            Write-Error "Error: setup.exe not found in local SQL Server directory '$sqlInstallerLocalPath'."
+            exit 1
+        }
+    } else {
+        Write-Error "SQL Server installer local path '$sqlInstallerLocalPath' not found or is invalid."
+        exit 1
+    }
+} else {
+    Write-Error "ERROR: For automated SQL Server installation, you MUST provide a local path to the SQL Server Developer Edition ISO or extracted media (setup.exe) using the -sqlInstallerLocalPath parameter."
+    Write-Error "The online installer does not support silent full media download or installation directly via command line."
+    Write-Error "Please download the SQL Server Developer ISO manually (e.g., from your Visual Studio Subscription or Microsoft Evaluation Center) and provide its path."
     exit 1
 }
-Write-Host "Full SQL Server installation media downloaded to: $sqlMediaDownloadPath"
 
-# Now, run setup.exe from the downloaded media
-$sqlSetupExePath = Join-Path $sqlMediaDownloadPath "setup.exe"
-if (-not (Test-Path $sqlSetupExePath)) {
-    Write-Error "setup.exe not found at '$sqlSetupExePath'. The media download might have failed or the path is incorrect."
-    exit 1
+# Ensure SQL Server installation path exists
+if (-not (Test-Path $sqlInstallPath)) {
+    New-Item -Path $sqlInstallPath -ItemType Directory -Force
 }
 
-Write-Host "Second stage: Executing SQL Server Developer Edition setup from downloaded media. This may take a while..."
+Write-Host "Executing SQL Server Developer Edition setup. This may take a while..."
 
+# These arguments are for setup.exe (from an ISO or extracted media)
 $installLogFile = "C:\SQLDeveloperInstallLog.txt"
 $sqlInstallArguments = @(
     "/install"
@@ -145,13 +171,31 @@ $sqlInstallArguments = @(
     "/logfile=$installLogFile"
 )
 
-Write-Host "Running setup.exe: $sqlSetupExePath $($sqlInstallArguments -join ' ')"
-$process = Start-Process -FilePath $sqlSetupExePath -ArgumentList $sqlInstallArguments -Wait -PassThru -NoNewWindow
-if ($process.ExitCode -ne 0) {
-    Write-Error "SQL Server Developer Edition installation (setup.exe stage) failed with exit code $($process.ExitCode). Check $installLogFile for details."
+# Crucial part: Execute the determined SQL Setup executable
+if (-not ([string]::IsNullOrEmpty($sqlSetupExe)) -and (Test-Path $sqlSetupExe)) {
+    Write-Host "Running SQL setup: $sqlSetupExe $($sqlInstallArguments -join ' ')"
+    $process = Start-Process -FilePath $sqlSetupExe -ArgumentList $sqlInstallArguments -Wait -PassThru -NoNewWindow
+    if ($process.ExitCode -ne 0) {
+        Write-Error "SQL Server Developer Edition installation failed with exit code $($process.ExitCode). Check $installLogFile for details."
+        exit 1
+    }
+    Write-Host "SQL Server Developer Edition installation complete."
+} else {
+    Write-Error "SQL Server setup executable could not be determined or found. Aborting installation."
     exit 1
 }
-Write-Host "SQL Server Developer Edition installation complete."
+
+# --- Clean up mounted ISO if applicable ---
+if (-not ([string]::IsNullOrEmpty($mountedDriveLetter))) {
+    Write-Host "Dismounting SQL Server ISO..."
+    try {
+        Dismount-DiskImage -ImagePath $sqlInstallerLocalPath -Confirm:$false
+        Write-Host "ISO dismounted."
+    }
+    catch {
+        Write-Warning "Failed to dismount ISO '$sqlInstallerLocalPath'. Error: $($_.Exception.Message)"
+    }
+}
 
 # --- 2. Install Microsoft ODBC Driver 18 for SQL Server ---
 Write-Host "Preparing ODBC Driver 18 for SQL Server installation..."
