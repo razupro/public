@@ -155,7 +155,8 @@ $installLogFile = "C:\SQLDeveloperInstallLog.txt"
 $sqlInstallArguments = @(
     "/ACTION=Install"
     "/quiet"
-    "/accepteulaterms"
+    "/IACCEPTSQLSERVERLICENSETERMS"
+    "/IACCEPTROPENLICENSTERMS"
     "/features=SQLEngine,SSMS,TOOLS,ADVANCEDANALYTICS,FULLTEXT,SQL_INST_MP,DBREPLICATION,IS,DQ,AS" # Common features, adjust as needed
     "/instancename=$instanceName"
     "/sqlsvcaccount=`"NT Service\MSSQLSERVER`"" # Default account for default instance (MSSQLSERVER)
