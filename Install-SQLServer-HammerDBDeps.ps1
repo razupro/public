@@ -85,19 +85,46 @@ function Get-InstallerPath {
     }
 }
 
-# --- 1. Install SQL Server Developer Edition (Silent Installation) ---
+# --- 1. Install SQL Server Developer Edition (Silent Installation - Two Stages) ---
 Write-Host "Preparing SQL Server Developer Edition installation..."
-$sqlInstaller = Get-InstallerPath -url $sqlInstallerUrl -fileName $sqlInstallerFileName -localPath $sqlInstallerLocalPath -targetDir $downloadsDir
 
-if (-not (Test-Path $sqlInstallPath)) {
-    New-Item -Path $sqlInstallPath -ItemType Directory -Force
+# Define the path where the full SQL Server installation media will be downloaded
+$sqlMediaDownloadPath = Join-Path $downloadsDir "SQLServerMedia"
+if (-not (Test-Path $sqlMediaDownloadPath)) {
+    New-Item -Path $sqlMediaDownloadPath -ItemType Directory -Force
+    Write-Host "Created SQL Server media download directory: $sqlMediaDownloadPath"
 }
 
-Write-Host "Executing SQL Server Developer Edition setup. This may take a while..."
+# Get the path to the online SQL Server installer (SQL2022-SSEI-Dev.exe)
+$sqlOnlineInstaller = Get-InstallerPath -url $sqlInstallerUrl -fileName $sqlInstallerFileName -localPath $sqlInstallerLocalPath -targetDir $downloadsDir
 
-# For the online installer (e.g., SQL2022-SSEI-Dev.exe), it first downloads components.
-# This approach starts the online installer silently to perform the full installation.
-# If you are using a full ISO/extracted installer, you'd typically run setup.exe from the extracted path.
+Write-Host "First stage: Downloading full SQL Server media using the online installer. This may take a while..."
+
+# Arguments for the online installer to download the media silently
+$onlineInstallerLogFile = "C:\SQLOnlineInstallerLog.txt"
+$onlineInstallerArguments = @(
+    "/DOWNLOAD"
+    "/MEDIALOCATION=`"$sqlMediaDownloadPath`""
+    "/quiet" # Attempt to run quietly if supported by the online installer version
+)
+
+Write-Host "Running online installer to download media: $sqlOnlineInstaller $($onlineInstallerArguments -join ' ')"
+$process = Start-Process -FilePath $sqlOnlineInstaller -ArgumentList $onlineInstallerArguments -Wait -PassThru -NoNewWindow
+if ($process.ExitCode -ne 0) {
+    Write-Error "SQL Server online installer failed to download media with exit code $($process.ExitCode). Check $onlineInstallerLogFile for details."
+    exit 1
+}
+Write-Host "Full SQL Server installation media downloaded to: $sqlMediaDownloadPath"
+
+# Now, run setup.exe from the downloaded media
+$sqlSetupExePath = Join-Path $sqlMediaDownloadPath "setup.exe"
+if (-not (Test-Path $sqlSetupExePath)) {
+    Write-Error "setup.exe not found at '$sqlSetupExePath'. The media download might have failed or the path is incorrect."
+    exit 1
+}
+
+Write-Host "Second stage: Executing SQL Server Developer Edition setup from downloaded media. This may take a while..."
+
 $installLogFile = "C:\SQLDeveloperInstallLog.txt"
 $sqlInstallArguments = @(
     "/install"
@@ -109,7 +136,7 @@ $sqlInstallArguments = @(
     "/sqlsysadminaccounts=`"$sqlAdminUser`""
     "/sapwd=`"$saPassword`""
     "/tcpenabled=1"
-    "/browsersvcupdatetype=Automatic" # Changed from STARTUPTYPE for some versions
+    "/browsersvcupdatetype=Automatic"
     "/updateenabled=false"
     "/errorreporting=false"
     "/sqletlogdirectory=$sqlInstallPath"
@@ -118,10 +145,10 @@ $sqlInstallArguments = @(
     "/logfile=$installLogFile"
 )
 
-Write-Host "Running online installer: $sqlInstaller $($sqlInstallArguments -join ' ')"
-$process = Start-Process -FilePath $sqlInstaller -ArgumentList $sqlInstallArguments -Wait -PassThru -NoNewWindow
+Write-Host "Running setup.exe: $sqlSetupExePath $($sqlInstallArguments -join ' ')"
+$process = Start-Process -FilePath $sqlSetupExePath -ArgumentList $sqlInstallArguments -Wait -PassThru -NoNewWindow
 if ($process.ExitCode -ne 0) {
-    Write-Error "SQL Server Developer Edition installation failed with exit code $($process.ExitCode). Check $installLogFile for details."
+    Write-Error "SQL Server Developer Edition installation (setup.exe stage) failed with exit code $($process.ExitCode). Check $installLogFile for details."
     exit 1
 }
 Write-Host "SQL Server Developer Edition installation complete."
