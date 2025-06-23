@@ -153,7 +153,7 @@ Write-Host "Executing SQL Server Developer Edition setup. This may take a while.
 # These arguments are for setup.exe (from an ISO or extracted media)
 $installLogFile = "C:\SQLDeveloperInstallLog.txt"
 $sqlInstallArguments = @(
-    "/install"
+    "/ACTION=Install"
     "/quiet"
     "/accepteulaterms"
     "/features=SQLEngine,SSMS,TOOLS,ADVANCEDANALYTICS,FULLTEXT,SQL_INST_MP,DBREPLICATION,IS,DQ,AS" # Common features, adjust as needed
