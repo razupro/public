@@ -287,7 +287,7 @@ End {
     Write-Host "All generated TCL scripts are in '`$TCLScriptsDir'"
     Write-Host "All benchmark results are in '`$ResultsDir'"
 }
-"@ | Set-Content -Path "C:\Scripts\HammerDB\Run-HammerDB_TPCC_Benchmark.ps1" -Encoding UTF8
+"@ | Set-Content -Path "C:\users\administrator\Downloads\Run-HammerDB_TPCC_Benchmark.ps1" -Encoding UTF8
 
-Write-Host "Run-HammerDB_TPCC_Benchmark.ps1 has been created/overwritten at C:\Scripts\HammerDB\Run-HammerDB_TPCC_Benchmark.ps1"
-Write-Host "You can now run it using: C:\Scripts\HammerDB\Run-HammerDB_TPCC_Benchmark.ps1 -InstanceName \"localhost\" -SaPassword \"YourPassword\" -Warehouses 8 -VirtualUsers @(1,2)"
+Write-Host "Run-HammerDB_TPCC_Benchmark.ps1 has been created/overwritten at :\users\administrator\Downloads\Run-HammerDB_TPCC_Benchmark.ps1"
+Write-Host "You can now run it using: C:\users\administrator\Downloads\Run-HammerDB_TPCC_Benchmark.ps1 -InstanceName \"localhost\" -SaPassword \"YourPassword\" -Warehouses 8 -VirtualUsers @(1,2)"
