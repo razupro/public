@@ -8,15 +8,16 @@ param(
     [string]$DownloadPath = "$env:TEMP\HammerDB-5.0-Setup.exe", # Changed default filename and extension to .exe
 
     [Parameter(Mandatory=$false)]
-    [string]$HammerDBInstallPath = "C:\Program Files\HammerDB" # Default installation path for HammerDB
+    [string]$HammerDBInstallPath = "C:\Program Files\HammerDB" # Ensuring consistent path for benchmark script
 )
 
 Begin {
     Write-Host "Starting HammerDB Installation Script..."
     Write-Host "Attempting to install HammerDB version 5.0 from GitHub."
+    Write-Host "HammerDB will be installed to '$HammerDBInstallPath'."
 }
 Process {
-    # Check if HammerDB CLI executable already exists
+    # Check if HammerDB CLI executable already exists at the target path
     if (Test-Path "$HammerDBInstallPath\hammerdbcli.exe") {
         Write-Host "HammerDB appears to be already installed at '$HammerDBInstallPath'. Skipping installation."
         return
@@ -32,18 +33,17 @@ Process {
         exit 1
     }
 
-    Write-Host "Running HammerDB installer silently..."
+    Write-Host "Running HammerDB installer silently using '--mode unattended' and '--prefix '$HammerDBInstallPath'..."
     try {
-        # Executing the .exe installer with a silent switch (/S).
-        # This is a common switch for many installers (e.g., Inno Setup, NSIS).
-        # If this fails, you might need to run "$DownloadPath /?" manually to find the correct silent switch.
-        $installProcess = Start-Process -FilePath $DownloadPath -ArgumentList "/S" -Wait -PassThru -ErrorAction Stop
+        # Executing the .exe installer with '--mode unattended' for silent install
+        # and '--prefix' to specify the installation directory.
+        $installProcess = Start-Process -FilePath $DownloadPath -ArgumentList "--mode unattended", "--prefix `"$HammerDBInstallPath`"" -Wait -PassThru -ErrorAction Stop
         if ($installProcess.ExitCode -eq 0) {
             Write-Host "HammerDB installed successfully to '$HammerDBInstallPath'."
         }
         else {
-            Write-Error "HammerDB installation failed with exit code $($installProcess.ExitCode). This often means the silent install switch was incorrect or there's another issue."
-            Write-Warning "Consider running '$DownloadPath /?' in a command prompt to see available silent install options, then manually run the installer if needed."
+            Write-Error "HammerDB installation failed with exit code $($installProcess.ExitCode). This often indicates an issue during the unattended install."
+            Write-Warning "Please try running '$DownloadPath --help' in a command prompt for more options, or perform a manual installation."
             exit 1
         }
     }
