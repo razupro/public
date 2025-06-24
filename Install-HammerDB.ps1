@@ -1,19 +1,20 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$false)]
-    # Updated URL to HammerDB's GitHub Releases for version 5.0
+    # URL for HammerDB 5.0 installer
     [string]$HammerDBInstallerUrl = "https://github.com/TPC-Council/HammerDB/releases/download/v5.0/HammerDB-5.0-Win-x64-Setup.exe",
 
     [Parameter(Mandatory=$false)]
-    [string]$DownloadPath = "$env:TEMP\HammerDB-5.0-Setup.exe", # Changed default filename and extension to .exe
+    # Default download path. You can change this to a permanent location if desired.
+    [string]$DownloadPath = "$env:TEMP\HammerDB-5.0-Setup.exe", 
 
     [Parameter(Mandatory=$false)]
-    [string]$HammerDBInstallPath = "C:\Program Files\HammerDB" # Ensuring consistent path for benchmark script
+    [string]$HammerDBInstallPath = "C:\Program Files\HammerDB" # Default installation path
 )
 
 Begin {
     Write-Host "Starting HammerDB Installation Script..."
-    Write-Host "Attempting to install HammerDB version 5.0 from GitHub."
+    Write-Host "Attempting to install HammerDB version 5.0."
     Write-Host "HammerDB will be installed to '$HammerDBInstallPath'."
 }
 Process {
@@ -23,20 +24,24 @@ Process {
         return
     }
 
-    Write-Host "Downloading HammerDB installer from '$HammerDBInstallerUrl'..."
-    try {
-        Invoke-WebRequest -Uri $HammerDBInstallerUrl -OutFile $DownloadPath -ErrorAction Stop
-        Write-Host "Download complete: '$DownloadPath'"
+    # Check if the installer file already exists locally
+    if (Test-Path $DownloadPath) {
+        Write-Host "HammerDB installer already exists locally at '$DownloadPath'. Skipping download."
     }
-    catch {
-        Write-Error "Failed to download HammerDB installer from GitHub. Please check the URL and your internet connection. Error: $($_.Exception.Message)"
-        exit 1
+    else {
+        Write-Host "Downloading HammerDB installer from '$HammerDBInstallerUrl'..."
+        try {
+            Invoke-WebRequest -Uri $HammerDBInstallerUrl -OutFile $DownloadPath -ErrorAction Stop
+            Write-Host "Download complete: '$DownloadPath'"
+        }
+        catch {
+            Write-Error "Failed to download HammerDB installer from GitHub. Please check the URL and your internet connection. Error: $($_.Exception.Message)"
+            exit 1
+        }
     }
 
     Write-Host "Running HammerDB installer silently using '--mode unattended' and '--prefix '$HammerDBInstallPath'..."
     try {
-        # Executing the .exe installer with '--mode unattended' for silent install
-        # and '--prefix' to specify the installation directory.
         $installProcess = Start-Process -FilePath $DownloadPath -ArgumentList "--mode unattended", "--prefix `"$HammerDBInstallPath`"" -Wait -PassThru -ErrorAction Stop
         if ($installProcess.ExitCode -eq 0) {
             Write-Host "HammerDB installed successfully to '$HammerDBInstallPath'."
