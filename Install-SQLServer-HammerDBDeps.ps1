@@ -225,6 +225,7 @@ if ($process.ExitCode -ne 0) {
 }
 Write-Host "SSMS installation complete."
 #>
+
 # --- 4. Configure SQL Server for Remote Connections (Using WMI) ---
 Write-Host "Configuring SQL Server for remote connections using WMI..."
 
@@ -245,37 +246,38 @@ if (-not (Get-Service -Name $sqlSvcName -ErrorAction SilentlyContinue)) {
     Write-Host "SQL Server service name: $sqlSvcName"
 
     try {
-        # Define the WMI Namespace for SQL Server 2022 (adjust for other versions if needed)
-        # For SQL Server 2022 (v16.x), the namespace is 'ComputerManagement16'
+        # Define the WMI Namespace for SQL Server 2022 (ComputerManagement16)
         $wmiNamespace = "root\Microsoft\SqlServer\ComputerManagement16"
 
-        # Get the WMI object for the SQL Server instance's Network Protocols
-        # Filtering by ComputerName and InstanceName
-        $networkConfig = Get-CimInstance -Namespace $wmiNamespace -ClassName "ServerNetworkProtocol" |
-                         Where-Object { $_.InstanceName -eq $instanceName }
+        # Get the specific TCP protocol instance directly using a filter
+        # This ensures we get the exact CIM instance that has the methods
+        $tcpProtocolInstance = Get-CimInstance -Namespace $wmiNamespace -ClassName "ServerNetworkProtocol" `
+            -Filter "InstanceName = '$instanceName' AND ProtocolName = 'Tcp'"
 
-        if ($networkConfig) {
-            # Find the TCP/IP protocol
-            $tcpProtocol = $networkConfig | Where-Object { $_.ProtocolName -eq "Tcp" }
-
-            if ($tcpProtocol) {
-                if (-not $tcpProtocol.IsEnabled) {
-                    Write-Host "Enabling TCP/IP protocol for SQL Server instance '$instanceName' via WMI..."
-                    # The Enable method is called on the specific protocol instance
-                    $tcpProtocol | Invoke-CimMethod -MethodName "Enable"
-                    Write-Host "TCP/IP protocol enabled via WMI."
+        if ($tcpProtocolInstance) {
+            # Check if TCP/IP is already enabled
+            if (-not $tcpProtocolInstance.IsEnabled) {
+                Write-Host "Enabling TCP/IP protocol for SQL Server instance '$instanceName' via WMI..."
+                
+                # Directly call the Enable() method on the CIM instance object
+                $result = $tcpProtocolInstance.Enable() 
+                
+                # Check the ReturnValue property (0 usually means success)
+                if ($result.ReturnValue -eq 0) {
+                    Write-Host "TCP/IP protocol enabled via WMI successfully."
                 } else {
-                    Write-Host "TCP/IP protocol already enabled for SQL Server instance '$instanceName'."
+                    Write-Error "Failed to enable TCP/IP via WMI. The method returned a non-zero value. ReturnValue: $($result.ReturnValue)"
+                    Write-Warning "You might need to manually enable TCP/IP for '$instanceName' via SQL Server Configuration Manager (SQLServerManager16.msc or similar)."
                 }
             } else {
-                Write-Warning "TCP protocol not found for instance '$instanceName' via WMI. Manual configuration may be required."
+                Write-Host "TCP/IP protocol already enabled for SQL Server instance '$instanceName'."
             }
         } else {
-            Write-Warning "SQL Server Network Protocol configuration not found for instance '$instanceName' via WMI. Ensure SQL Server is fully installed."
+            Write-Warning "TCP protocol instance not found for instance '$instanceName' via WMI. Manual configuration may be required."
         }
     }
     catch {
-        Write-Error "Failed to configure TCP/IP via WMI. Error: $($_.Exception.Message)"
+        Write-Error "An unexpected error occurred during WMI TCP/IP configuration: $($_.Exception.Message)"
         Write-Warning "You might need to manually enable TCP/IP for '$instanceName' via SQL Server Configuration Manager (SQLServerManager16.msc or similar)."
     }
 
