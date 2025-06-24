@@ -164,7 +164,6 @@ $sqlInstallArguments = @(
     "/tcpenabled=1"
     "/updateenabled=false"
     "/errorreporting=false"
-    "/logfile=$installLogFile"
 )
 
 # Crucial part: Execute the determined SQL Setup executable
