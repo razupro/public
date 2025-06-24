@@ -164,7 +164,6 @@ $sqlInstallArguments = @(
     "/tcpenabled=1"
     "/updateenabled=false"
     "/errorreporting=false"
-    "/sqletlogdirectory=$sqlInstallPath"
     "/installsharedir=`"C:\Program Files\Microsoft SQL Server\`""
     "/installsharedwowdir=`"C:\Program Files (x86)\Microsoft SQL Server\`""
     "/logfile=$installLogFile"
