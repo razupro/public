@@ -225,110 +225,64 @@ if ($process.ExitCode -ne 0) {
 }
 Write-Host "SSMS installation complete."
 #>
-# --- 4. Configure SQL Server for Remote Connections ---
-Write-Host "Configuring SQL Server for remote connections..."
+# --- 4. Configure SQL Server for Remote Connections (Using WMI) ---
+Write-Host "Configuring SQL Server for remote connections using WMI..."
 
-# Initialize a flag to track module installation success
-$moduleInstallFailed = $false
+# Ensure SQL Server Browser is running (optional but helpful for named instances)
+Set-Service -Name "SQLBrowser" -StartupType Automatic -ErrorAction SilentlyContinue
+Start-Service -Name "SQLBrowser" -ErrorAction SilentlyContinue
 
-# Check if the 'SqlServer' PowerShell module is installed, install if not.
-if (-not (Get-Module -ListAvailable -Name SqlServer)) {
-    Write-Host "SqlServer PowerShell module not found. Attempting to install..."
-
-    # Ensure NuGet provider is available (this part should be good from previous fix)
-    Write-Host "Ensuring NuGet provider is installed/updated..."
-    try {
-        Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Confirm:$false -ErrorAction Stop
-        Write-Host "NuGet provider installed/updated successfully."
-    }
-    catch {
-        Write-Error "CRITICAL ERROR: Failed to install or update NuGet provider. This is required for installing PowerShell modules. Error: $($_.Exception.Message)"
-        $moduleInstallFailed = $true # Set flag if NuGet fails
-    }
-
-    # Attempt to install SqlServer module, but only if NuGet was successful
-    if (-not $moduleInstallFailed) {
-        try {
-            Write-Host "Installing SqlServer PowerShell module from PSGallery..."
-            Install-Module -Name SqlServer -RequiredVersion 21.1.18256 -Scope AllUsers -Force -AllowClobber -Confirm:$false -ErrorAction Stop
-            Write-Host "SqlServer PowerShell module installation initiated."
-
-            # After installation, ensure it's imported into the current session
-            Write-Host "Importing SqlServer PowerShell module..."
-            Import-Module SqlServer -RequiredVersion 21.1.18256 -ErrorAction Stop
-            Write-Host "SqlServer PowerShell module installed and imported successfully."
-        }
-        catch {
-            Write-Error "CRITICAL ERROR: Failed to install or import SqlServer PowerShell module. This will prevent automated TCP/IP configuration. Error: $($_.Exception.Message)"
-            Write-Warning "Please try to install the 'SqlServer' module manually in an elevated PowerShell session: Install-Module -Name SqlServer -Scope AllUsers -Force -AllowClobber"
-            $moduleInstallFailed = $true # Set flag if SqlServer module fails
-        }
-    }
-} else {
-    # Module is listed as available, just ensure it's imported into the current session
-    Write-Host "SqlServer PowerShell module found. Ensuring it's imported..."
-    try {
-        Import-Module SqlServer -ErrorAction Stop
-        Write-Host "SqlServer PowerShell module imported successfully."
-    }
-    catch {
-        Write-Error "CRITICAL ERROR: Failed to import SqlServer PowerShell module, even though it's listed as available. Error: $($_.Exception.Message)"
-        Write-Warning "This will prevent automated TCP/IP configuration. You might need to troubleshoot your PowerShell environment or manually import the module."
-        $moduleInstallFailed = $true # Set flag if import fails
-    }
+# Determine the SQL Server service name for the instance
+$sqlSvcName = "MSSQLSERVER" # Assuming default instance for Developer Edition
+if ($instanceName -ne "MSSQLSERVER") {
+    $sqlSvcName = "MSSQL`$$instanceName"
 }
 
-# --- ONLY PROCEED WITH TCP/IP CONFIGURATION IF MODULE IS SUCCESSFULLY LOADED ---
-if (-not $moduleInstallFailed) {
-    # Ensure SQL Server Browser is running (optional but helpful for named instances)
-    Set-Service -Name "SQLBrowser" -StartupType Automatic -ErrorAction SilentlyContinue
-    Start-Service -Name "SQLBrowser" -ErrorAction SilentlyContinue
+# Double check if the SQL Server service exists
+if (-not (Get-Service -Name $sqlSvcName -ErrorAction SilentlyContinue)) {
+    Write-Warning "SQL Server service '$sqlSvcName' not found. Manual TCP/IP configuration might be needed."
+} else {
+    Write-Host "SQL Server service name: $sqlSvcName"
 
-    # Get SQL Server service name for the instance
-    $sqlSvcName = "MSSQLSERVER" # Assuming default instance for Developer Edition
-    if ($instanceName -ne "MSSQLSERVER") {
-        $sqlSvcName = "MSSQL`$$instanceName"
-    }
+    try {
+        # Define the WMI Namespace for SQL Server 2022 (adjust for other versions if needed)
+        # For SQL Server 2022 (v16.x), the namespace is 'ComputerManagement16'
+        $wmiNamespace = "root\Microsoft\SqlServer\ComputerManagement16"
 
-    # Double check if the service exists before attempting to configure
-    if (-not (Get-Service -Name $sqlSvcName -ErrorAction SilentlyContinue)) {
-        Write-Warning "SQL Server service '$sqlSvcName' not found. Manual TCP/IP configuration might be needed."
-    } else {
-        Write-Host "SQL Server service name: $sqlSvcName"
-        try {
-            $serverInstance = "localhost"
-            if ($instanceName -ne "MSSQLSERVER") {
-                $serverInstance += "\$instanceName"
-            }
+        # Get the WMI object for the SQL Server instance's Network Protocols
+        # Filtering by ComputerName and InstanceName
+        $networkConfig = Get-CimInstance -Namespace $wmiNamespace -ClassName "ServerNetworkProtocol" |
+                         Where-Object { $_.InstanceName -eq $instanceName }
 
-            # Check if the protocol is already enabled
-            $tcpProtocol = Get-SqlProtocol -ServerInstance $serverInstance | Where-Object { $_.Name -eq "Tcp" }
+        if ($networkConfig) {
+            # Find the TCP/IP protocol
+            $tcpProtocol = $networkConfig | Where-Object { $_.ProtocolName -eq "Tcp" }
 
-            if ($null -ne $tcpProtocol) {
-                if ($tcpProtocol.IsEnabled -ne $true) {
-                    Write-Host "Enabling TCP/IP protocol for SQL Server instance '$serverInstance'..."
-                    $tcpProtocol.IsEnabled = $true
-                    $tcpProtocol.Alter()
-                    Write-Host "TCP/IP protocol enabled."
+            if ($tcpProtocol) {
+                if (-not $tcpProtocol.IsEnabled) {
+                    Write-Host "Enabling TCP/IP protocol for SQL Server instance '$instanceName' via WMI..."
+                    # The Enable method is called on the specific protocol instance
+                    $tcpProtocol | Invoke-CimMethod -MethodName "Enable"
+                    Write-Host "TCP/IP protocol enabled via WMI."
                 } else {
-                    Write-Host "TCP/IP protocol already enabled for SQL Server instance '$serverInstance'."
+                    Write-Host "TCP/IP protocol already enabled for SQL Server instance '$instanceName'."
                 }
             } else {
-                Write-Warning "TCP protocol not found for instance '$serverInstance'. Manual configuration may be required."
+                Write-Warning "TCP protocol not found for instance '$instanceName' via WMI. Manual configuration may be required."
             }
+        } else {
+            Write-Warning "SQL Server Network Protocol configuration not found for instance '$instanceName' via WMI. Ensure SQL Server is fully installed."
         }
-        catch {
-            Write-Warning "Could not enable TCP/IP using SqlServer module. Error: $($_.Exception.Message)"
-            Write-Warning "You might need to manually enable TCP/IP for '$instanceName' via SQL Server Configuration Manager (SQLServerManager16.msc or similar) or ensure SQL Server Browser is running and accessible."
-        }
-
-        # Restart SQL Server service to apply changes
-        Write-Host "Restarting SQL Server service '$sqlSvcName'..."
-        Restart-Service -Name $sqlSvcName -Force -ErrorAction SilentlyContinue
-        Write-Host "SQL Server service restarted."
     }
-} else {
-    Write-Warning "Skipping SQL Server TCP/IP configuration because the SqlServer PowerShell module could not be installed/imported. Please configure manually if needed."
+    catch {
+        Write-Error "Failed to configure TCP/IP via WMI. Error: $($_.Exception.Message)"
+        Write-Warning "You might need to manually enable TCP/IP for '$instanceName' via SQL Server Configuration Manager (SQLServerManager16.msc or similar)."
+    }
+
+    # Restart SQL Server service to apply changes
+    Write-Host "Restarting SQL Server service '$sqlSvcName'..."
+    Restart-Service -Name $sqlSvcName -Force -ErrorAction SilentlyContinue
+    Write-Host "SQL Server service restarted."
 }
 
 Write-Host "SQL Server Developer Edition and dependencies installation complete."
