@@ -213,6 +213,7 @@ Write-Host "ODBC Driver 18 for SQL Server installation complete."
 #####End of commenting out ODBC installation ####
 
 # --- 3. Install SQL Server Management Studio (SSMS) ---
+<#
 Write-Host "Preparing SSMS installation..."
 $ssmsInstaller = Get-InstallerPath -url $ssmsInstallerUrl -fileName $ssmsInstallerFileName -localPath $ssmsInstallerLocalPath -targetDir $downloadsDir
 
@@ -223,7 +224,7 @@ if ($process.ExitCode -ne 0) {
     exit 1
 }
 Write-Host "SSMS installation complete."
-
+#>
 # --- 4. Configure SQL Server for Remote Connections ---
 Write-Host "Configuring SQL Server for remote connections..."
 
