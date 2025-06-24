@@ -88,6 +88,7 @@ function Get-InstallerPath {
 }
 
 # --- 1. Install SQL Server Developer Edition (Silent Installation) ---
+<#
 Write-Host "Preparing SQL Server Developer Edition installation..."
 
 $sqlSetupExe = ""
@@ -203,6 +204,7 @@ if ($process.ExitCode -ne 0) {
     exit 1
 }
 Write-Host "ODBC Driver 18 for SQL Server installation complete."
+#>
 
 # --- 3. Install SQL Server Management Studio (SSMS) ---
 Write-Host "Preparing SSMS installation..."
