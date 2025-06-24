@@ -88,7 +88,8 @@ function Get-InstallerPath {
 }
 
 # --- 1. Install SQL Server Developer Edition (Silent Installation) ---
-<#
+#######commenting SQL Installation############
+<# 
 Write-Host "Preparing SQL Server Developer Edition installation..."
 
 $sqlSetupExe = ""
@@ -192,8 +193,12 @@ if (-not ([string]::IsNullOrEmpty($mountedDriveLetter))) {
         Write-Warning "Failed to dismount ISO '$sqlInstallerLocalPath'. Error: $($_.Exception.Message)"
     }
 }
+#> 
+#######End of comment############
 
 # --- 2. Install Microsoft ODBC Driver 18 for SQL Server ---
+#####commenting out ODBC installation ####
+<#
 Write-Host "Preparing ODBC Driver 18 for SQL Server installation..."
 $odbcDriverInstaller = Get-InstallerPath -url $odbcDriverUrl -fileName $odbcDriverFileName -localPath $odbcDriverLocalPath -targetDir $downloadsDir
 
@@ -205,6 +210,7 @@ if ($process.ExitCode -ne 0) {
 }
 Write-Host "ODBC Driver 18 for SQL Server installation complete."
 #>
+#####End of commenting out ODBC installation ####
 
 # --- 3. Install SQL Server Management Studio (SSMS) ---
 Write-Host "Preparing SSMS installation..."
