@@ -249,12 +249,12 @@ if (-not (Get-Module -ListAvailable -Name SqlServer)) {
     if (-not $moduleInstallFailed) {
         try {
             Write-Host "Installing SqlServer PowerShell module from PSGallery..."
-            Install-Module -Name SqlServer -Scope AllUsers -Force -AllowClobber -Confirm:$false -ErrorAction Stop
+            Install-Module -Name SqlServer -RequiredVersion 21.1.18256 -Scope AllUsers -Force -AllowClobber -Confirm:$false -ErrorAction Stop
             Write-Host "SqlServer PowerShell module installation initiated."
 
             # After installation, ensure it's imported into the current session
             Write-Host "Importing SqlServer PowerShell module..."
-            Import-Module SqlServer -ErrorAction Stop
+            Import-Module SqlServer -RequiredVersion 21.1.18256 -ErrorAction Stop
             Write-Host "SqlServer PowerShell module installed and imported successfully."
         }
         catch {
