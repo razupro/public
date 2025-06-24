@@ -162,7 +162,6 @@ $sqlInstallArguments = @(
     "/sqlsysadminaccounts=`"$sqlAdminUser`""
     "/sapwd=`"$saPassword`""
     "/tcpenabled=1"
-    "/browsersvcupdatetype=Automatic"
     "/updateenabled=false"
     "/errorreporting=false"
     "/sqletlogdirectory=$sqlInstallPath"
