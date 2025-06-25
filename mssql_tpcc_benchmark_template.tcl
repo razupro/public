@@ -1,32 +1,37 @@
-# HammerDB MSSQL TPC-C Benchmark Template with Command Line Parameters
+# ===================================
+# HammerDB MSSQL TPC-C TCL Benchmark Template (Supports HammerDB 5.0 'args')
+# ===================================
 
-# ===============================
-# Read Command Line Parameters
-# ===============================
-
-# Default values
+# ========================
+# Default Parameters
+# ========================
 set dbserver "localhost"
 set dbuser "sa"
-set dbpassword "Netapp1!"
-set dbinstance "MSSQLSERVER"
+set dbpassword "YourPassword"
 set dbname "tpcc"
-
-# Defaults for parameters
 set warehouses 5
 set rampup 2
 set duration 5
 set workload_vusers {10 20 30 40}
 
-# Parse arguments
-foreach arg $argv {
-    if {[regexp {warehouses=(.+)} $arg -> val]} {set warehouses $val}
-    if {[regexp {rampup=(.+)} $arg -> val]} {set rampup $val}
-    if {[regexp {duration=(.+)} $arg -> val]} {set duration $val}
-    if {[regexp {vusers=(.+)} $arg -> val]} {
+# ========================
+# Parse args
+# ========================
+foreach {key val} $args {
+    if {$key eq "warehouses"} {set warehouses $val}
+    if {$key eq "rampup"} {set rampup $val}
+    if {$key eq "duration"} {set duration $val}
+    if {$key eq "vusers"} {
         set workload_vusers [split $val ","]
     }
+    if {$key eq "dbserver"} {set dbserver $val}
+    if {$key eq "dbuser"} {set dbuser $val}
+    if {$key eq "dbpassword"} {set dbpassword $val}
 }
 
+# ========================
+# Display Configuration
+# ========================
 puts "======== Benchmark Parameters ========"
 puts "Database Server   : $dbserver"
 puts "Database User     : $dbuser"
@@ -36,13 +41,13 @@ puts "Warehouses        : $warehouses"
 puts "Ramp-up (minutes) : $rampup"
 puts "Duration (minutes): $duration"
 puts "Virtual Users     : $workload_vusers"
-puts "========================================"
+puts "======================================="
 
-# ===============================
+
+# ========================
 # Database Cleanup
-# ===============================
-
-puts "\n[INFO] Connecting to SQL Server for cleanup..."
+# ========================
+puts "[INFO] Connecting to SQL Server for cleanup..."
 dbset db mssqls
 diset connection mssqls_server $dbserver
 diset connection mssqls_user $dbuser
@@ -57,11 +62,11 @@ mssqls_exec "IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = 'tpcc') BEGIN 
 
 puts "[INFO] Cleanup completed."
 
-# ===============================
-# Schema Build
-# ===============================
 
-puts "\n[INFO] Starting schema build..."
+# ========================
+# Schema Build
+# ========================
+puts "[INFO] Starting schema build..."
 
 diset tpcc mssqls_server $dbserver
 diset tpcc mssqls_user $dbuser
@@ -78,19 +83,17 @@ waittocomplete
 
 puts "[INFO] Schema build completed."
 
-# ===============================
+
+# ========================
 # Run Workloads
-# ===============================
-
+# ========================
 foreach vuser $workload_vusers {
-    puts "\n[INFO] Starting workload with $vuser Virtual Users..."
+    puts "[INFO] Starting workload with $vuser Virtual Users..."
 
-    # Configure
     vuset logtotemp 1
     vuset vu $vuser
     loadscript
 
-    # Run
     vucreate
 
     puts "[INFO] Running workload..."
@@ -100,6 +103,6 @@ foreach vuser $workload_vusers {
     puts "[INFO] Workload with $vuser VUs completed."
 }
 
-puts "\n[INFO] All workloads completed."
+puts "[INFO] All workloads completed."
 
 exit
