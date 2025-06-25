@@ -5,9 +5,9 @@
 # ===============================
 
 # Default values
-set dbserver "10.128.5.15"
+set dbserver "localhost"
 set dbuser "sa"
-set dbpassword "YourPassword"
+set dbpassword "Netapp1!"
 set dbinstance "MSSQLSERVER"
 set dbname "tpcc"
 
