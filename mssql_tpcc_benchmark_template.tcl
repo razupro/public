@@ -7,7 +7,7 @@
 # ========================
 set dbserver "localhost"
 set dbuser "sa"
-set dbpassword "YourPassword"
+set dbpassword "Netapp1!"
 set dbname "tpcc"
 set warehouses 5
 set rampup 2
