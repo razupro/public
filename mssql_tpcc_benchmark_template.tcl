@@ -1,20 +1,15 @@
-# ===================================================
-# HammerDB 5.0 TCL Benchmark Script - SQL Server TPC-C
-# Fully automated workload with multiple virtual users
-# ===================================================
+# HammerDB TCL Benchmark Script - Auto Generated
 
-# ---- Configuration ----
-set dbserver "10.128.5.15"
-set dbuser "sa"
-set dbpassword "YourPassword"
-set dbname "tpcc"
+set dbserver      "{DBSERVER}"
+set dbuser        "{DBUSER}"
+set dbpassword    "{DBPASSWORD}"
+set dbname        "tpcc"
 
-set warehouses 5
-set workload_vusers {10 20 30 40}
-set rampup 2    ;# Informational only
-set duration 5  ;# Informational only
+set warehouses    {WAREHOUSES}
+set workload_vusers {{{VUS}}}
+set rampup        2
+set duration      {DURATION}
 
-# ---- Display Configuration ----
 puts "=============================================="
 puts "Database Server   : $dbserver"
 puts "Database User     : $dbuser"
@@ -25,7 +20,6 @@ puts "Duration (minutes): $duration"
 puts "Virtual Users     : $workload_vusers"
 puts "=============================================="
 
-# ---- Schema Build ----
 puts "[INFO] Starting schema build..."
 
 dbset db mssqls
@@ -47,9 +41,8 @@ diset tpcc mssqls_driver            odbc
 buildschema
 waittocomplete
 
-puts "[INFO] Schema build completed successfully."
+puts "[INFO] Schema build completed."
 
-# ---- Run Workloads ----
 foreach vuser $workload_vusers {
     puts "--------------------------------------------------"
     puts "[INFO] Starting workload with $vuser Virtual Users"
