@@ -15,21 +15,6 @@ set duration 5
 set workload_vusers {10 20 30 40}
 
 # ========================
-# Parse args
-# ========================
-foreach {key val} $args {
-    if {$key eq "warehouses"} {set warehouses $val}
-    if {$key eq "rampup"} {set rampup $val}
-    if {$key eq "duration"} {set duration $val}
-    if {$key eq "vusers"} {
-        set workload_vusers [split $val ","]
-    }
-    if {$key eq "dbserver"} {set dbserver $val}
-    if {$key eq "dbuser"} {set dbuser $val}
-    if {$key eq "dbpassword"} {set dbpassword $val}
-}
-
-# ========================
 # Display Configuration
 # ========================
 puts "======== Benchmark Parameters ========"
