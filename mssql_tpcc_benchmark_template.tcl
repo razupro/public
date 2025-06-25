@@ -1,93 +1,76 @@
-# ===================================
-# HammerDB MSSQL TPC-C TCL Benchmark Template (Supports HammerDB 5.0 'args')
-# ===================================
+# ===================================================
+# HammerDB 5.0 TCL Benchmark Script - SQL Server TPC-C
+# Fully automated workload with multiple virtual users
+# ===================================================
 
-# ========================
-# Default Parameters
-# ========================
-set dbserver "localhost"
+# ---- Configuration ----
+set dbserver "10.128.5.15"
 set dbuser "sa"
-set dbpassword "Netapp1!"
+set dbpassword "YourPassword"
 set dbname "tpcc"
-set warehouses 5
-set rampup 2
-set duration 5
-set workload_vusers {10 20 30 40}
 
-# ========================
-# Display Configuration
-# ========================
-puts "======== Benchmark Parameters ========"
+set warehouses 5
+set workload_vusers {10 20 30 40}
+set rampup 2    ;# Informational only
+set duration 5  ;# Informational only
+
+# ---- Display Configuration ----
+puts "=============================================="
 puts "Database Server   : $dbserver"
 puts "Database User     : $dbuser"
-puts "Database Password : (hidden)"
 puts "Database Name     : $dbname"
 puts "Warehouses        : $warehouses"
 puts "Ramp-up (minutes) : $rampup"
 puts "Duration (minutes): $duration"
 puts "Virtual Users     : $workload_vusers"
-puts "======================================="
+puts "=============================================="
 
-
-# ========================
-# Database Cleanup
-# ========================
-puts "[INFO] Connecting to SQL Server for cleanup..."
-dbset db mssqls
-diset connection mssqls_server $dbserver
-diset connection mssqls_user $dbuser
-diset connection mssqls_password $dbpassword
-diset connection mssqls_dbase master
-
-puts "[INFO] Dropping existing database '$dbname' if exists..."
-mssqls_exec "IF DB_ID('$dbname') IS NOT NULL BEGIN ALTER DATABASE [$dbname] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$dbname]; END"
-
-puts "[INFO] Dropping user 'tpcc' if exists..."
-mssqls_exec "IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = 'tpcc') BEGIN DROP LOGIN [tpcc]; END"
-
-puts "[INFO] Cleanup completed."
-
-
-# ========================
-# Schema Build
-# ========================
+# ---- Schema Build ----
 puts "[INFO] Starting schema build..."
 
-diset tpcc mssqls_server $dbserver
-diset tpcc mssqls_user $dbuser
-diset tpcc mssqls_password $dbpassword
-diset tpcc mssqls_dbase $dbname
-diset tpcc mssqls_authentication sqlserver
-diset tpcc count_ware $warehouses
-diset tpcc total_iterations 1
-diset tpcc tpcc_vu 1
-diset tpcc mssqls_driver odbc
+dbset db mssqls
+diset connection mssqls_server      $dbserver
+diset connection mssqls_user        $dbuser
+diset connection mssqls_password    $dbpassword
+diset connection mssqls_dbase       $dbname
+
+diset tpcc mssqls_server            $dbserver
+diset tpcc mssqls_user              $dbuser
+diset tpcc mssqls_password          $dbpassword
+diset tpcc mssqls_dbase             $dbname
+diset tpcc mssqls_authentication    sqlserver
+diset tpcc count_ware               $warehouses
+diset tpcc total_iterations         1
+diset tpcc tpcc_vu                  1
+diset tpcc mssqls_driver            odbc
 
 buildschema
 waittocomplete
 
-puts "[INFO] Schema build completed."
+puts "[INFO] Schema build completed successfully."
 
-
-# ========================
-# Run Workloads
-# ========================
+# ---- Run Workloads ----
 foreach vuser $workload_vusers {
-    puts "[INFO] Starting workload with $vuser Virtual Users..."
+    puts "--------------------------------------------------"
+    puts "[INFO] Starting workload with $vuser Virtual Users"
+    puts "--------------------------------------------------"
 
     vuset logtotemp 1
     vuset vu $vuser
+
     loadscript
 
     vucreate
-
-    puts "[INFO] Running workload..."
     vurun
     waittocomplete
 
+    puts "--------------------------------------------------"
     puts "[INFO] Workload with $vuser VUs completed."
+    puts "--------------------------------------------------"
 }
 
-puts "[INFO] All workloads completed."
+puts "=============================================="
+puts "[INFO] All workloads completed successfully."
+puts "=============================================="
 
 exit
