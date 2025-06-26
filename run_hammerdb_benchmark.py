@@ -304,12 +304,14 @@ dbset server {args.instance_name}
 # dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
 dbset user {args.hammerdb_user}
 dbset password {args.hammerdb_user_password}
-dbset tpcc
-dbset tpcc_driver tcl
-dbset tpcc_warehouses {args.warehouses}
+
+# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
+diset('tpcc','tpcc','') ; 
+diset('tpcc','tpcc_driver','tcl') ; 
+diset('tpcc','tpcc_warehouses',{args.warehouses}) ;
 
 # Build Schema (HammerDB 5.0 syntax)
-loadscript() ; # Load benchmark script (as seen in user's sample)
+loadscript() ; 
 vuset('vu',1) ; # Set 1 virtual user for schema build
 vucreate() ; # Create the virtual user session
 buildschema ; # Execute schema build
@@ -346,15 +348,14 @@ dbset server {args.instance_name}
 # dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
 dbset user {args.hammerdb_user}
 dbset password {args.hammerdb_user_password}
-dbset tpcc
-dbset tpcc_driver tcl
-dbset tpcc_warehouses {args.warehouses}
 
-# Benchmark run (HammerDB 5.0 syntax)
-# Set benchmark specific parameters using diset
-diset('tpcc','mssqls_driver','timed')
-diset('tpcc','mssqls_rampup',{args.ramp_up_seconds})
-diset('tpcc','mssqls_duration',{args.run_time_seconds})
+# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
+diset('tpcc','tpcc','') ; # Set benchmark type to TPC-C
+diset('tpcc','tpcc_driver','tcl') ; # Set TPC-C driver to tcl
+diset('tpcc','tpcc_warehouses',{args.warehouses}) ; # Set number of TPC-C warehouses
+diset('tpcc','mssqls_driver','timed') ; # Set MSSQL driver type for TPC-C
+diset('tpcc','mssqls_rampup',{args.ramp_up_seconds}) ; # Set ramp-up time
+diset('tpcc','mssqls_duration',{args.run_time_seconds}) ; # Set duration
 
 loadscript() ; # Load benchmark script (as seen in user's sample)
 vuset('vu',{vu_count}) ; # Set the specified number of virtual users
