@@ -295,11 +295,11 @@ def main():
         print(f"ERROR: Error creating database or user via pyodbc: {e}")
         exit(1)
 
-    # --- Generate TCL script for Schema Build ---
+# --- Generate TCL script for Schema Build ---
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Connect to SQL Server
-dbset db sqlserver
+dbset db mssqls ; 
 dbset server {args.instance_name}
 dbset inst {args.instance_name}
 dbset user {args.hammerdb_user}
@@ -309,7 +309,7 @@ dbset tpcc_driver tcl
 dbset tpcc_warehouses {args.warehouses}
 
 # Build Schema
-vuser auto
+# vuser auto is removed in HammerDB 5.0, directly use vu
 vu 1 ; # Only 1 virtual user is needed for schema build
 buildschema
 wait for buildschema complete
@@ -336,10 +336,10 @@ quit
     for vu_count in sorted(args.virtual_users): # Ensure VUs are run in ascending order
         print(f"\n--- Running benchmark with {vu_count} Virtual Users ---")
         
-        # Generate TCL script for Benchmark Run
+# Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Connect to SQL Server
-dbset db sqlserver
+dbset db mssqls ;
 dbset server {args.instance_name}
 dbset inst {args.instance_name}
 dbset user {args.hammerdb_user}
@@ -349,8 +349,8 @@ dbset tpcc_driver tcl
 dbset tpcc_warehouses {args.warehouses}
 
 # Benchmark run
-vuser auto
-vuser {vu_count}
+# vuser auto is removed in HammerDB 5.0, directly use vu
+vu {vu_count} ; 
 load tpc-c
 timer {args.run_time_seconds}
 rampup {args.ramp_up_seconds}
