@@ -299,24 +299,32 @@ def main():
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
-dbset db mssqls ;
+dbset db mssqls
 
-# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax)
-diset('mssqls','server','{args.instance_name}') ;
-diset('mssqls','user','{args.hammerdb_user}') ;
-diset('mssqls','password','{args.hammerdb_user_password}') ;
 
-# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
-diset('tpcc','tpcc_driver','tcl') ;
-diset('tpcc','tpcc_warehouses',{args.warehouses}) ;
+# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
+diset connection mssqls_server {args.instance_name}
+diset connection mssqls_user {args.hammerdb_user}
+diset connection mssqls_password {args.hammerdb_user_password}
+diset connection mssqls_dbase {args.db_name}
 
-# Build Schema (HammerDB 5.0 syntax)
-loadscript() ;
-vuset('vu',1) ;
-vucreate() ;
-buildschema ;
+# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
+diset tpcc mssqls_server {args.instance_name}
+diset tpcc mssqls_user {args.hammerdb_user}
+diset tpcc mssqls_password {args.hammerdb_user_password}
+diset tpcc mssqls_dbase {args.db_name}
+diset tpcc mssqls_authentication sqlserver
+diset tpcc count_ware {args.warehouses}
+diset tpcc total_iterations 1
+diset tpcc tpcc_vu 1 ; # For schema build
+diset tpcc mssqls_driver odbc ; # Use ODBC driver for schema build
+
+loadscript
+vuset('vu',1) ; # This is for the actual virtual user provisioning
+vucreate
+buildschema
 wait for buildschema complete
-vudestroy() ;
+vudestroy
 disconnect
 quit
 """
@@ -343,28 +351,35 @@ quit
 # Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
-dbset db mssqls ;
+dbset db mssqls
 
 
-# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax)
-diset('mssqls','server','{args.instance_name}') ;
-diset('mssqls','user','{args.hammerdb_user}') ;
-diset('mssqls','password','{args.hammerdb_user_password}') ;
+# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
+diset connection mssqls_server {args.instance_name}
+diset connection mssqls_user {args.hammerdb_user}
+diset connection mssqls_password {args.hammerdb_user_password}
+diset connection mssqls_dbase {args.db_name}
 
-# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
-diset('tpcc','tpcc_driver','tcl') ;
-diset('tpcc','tpcc_warehouses',{args.warehouses}) ;
-diset('tpcc','mssqls_driver','timed') ;
-diset('tpcc','mssqls_rampup',{args.ramp_up_seconds}) ;
-diset('tpcc','mssqls_duration',{args.run_time_seconds}) ;
+# Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
+diset tpcc mssqls_server {args.instance_name}
+diset tpcc mssqls_user {args.hammerdb_user}
+diset tpcc mssqls_password {args.hammerdb_user_password}
+diset tpcc mssqls_dbase {args.db_name}
+diset tpcc mssqls_authentication sqlserver
+diset tpcc count_ware {args.warehouses}
+diset tpcc total_iterations 1
+diset tpcc tpcc_vu {vu_count} ; # Set based on current VU count for the run
+diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
+diset tpcc mssqls_rampup {args.ramp_up_seconds}
+diset tpcc mssqls_duration {args.run_time_seconds}
 
-loadscript() ;
-vuset('vu',{vu_count}) ;
-vucreate() ;
-vurun() ;
+loadscript
+vuset('vu',{vu_count}) ; # This is for the actual virtual user provisioning
+vucreate
+vurun
 
-print vu metrics ;
-vudestroy() ;
+print vu metrics
+vudestroy
 disconnect
 log off
 quit
