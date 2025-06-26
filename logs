@@ -1,0 +1,128 @@
+Microsoft Windows [Version 10.0.20348.587]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Administrator>
+C:\Users\Administrator>cd Downloads
+
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is E816-5882
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/26/2025  01:00 AM    <DIR>          .
+06/19/2025  09:21 PM    <DIR>          ..
+06/17/2025  05:53 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  12:57 AM        28,838,672 python-3.13.5-amd64.exe
+06/26/2025  01:00 AM            14,223 run_hammerdb_benchmark.py
+06/17/2025  05:10 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/17/2025  05:33 AM         4,458,240 vs_SSMS.exe
+               5 File(s)     81,170,287 bytes
+               2 Dir(s)  192,091,209,728 bytes free
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 4, in <module>
+    import pyodbc # Required for SQL connection testing, though sqlcmd is used for most operations
+    ^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pyodbc'
+
+C:\Users\Administrator\Downloads>pip install pyodbc
+Collecting pyodbc
+  Downloading pyodbc-5.2.0-cp313-cp313-win_amd64.whl.metadata (2.8 kB)
+Downloading pyodbc-5.2.0-cp313-cp313-win_amd64.whl (69 kB)
+Installing collected packages: pyodbc
+Successfully installed pyodbc-5.2.0
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+ERROR: HammerDB CLI not found at 'C:\Program Files\HammerDB\hammerdbcli.exe'. Please ensure HammerDB is installed.
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL Connection Test Successful.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Executing SQLCMD query: ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; IF DB_ID('MyTPCCDatabase') IS NOT NULL DROP DATABASE [MyTPCCDatabase];
+Executing: sqlcmd.exe -S localhost -U sa -P Netapp1! -Q ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; IF DB_ID('MyTPCCDatabase') IS NOT NULL DROP DATABASE [MyTPCCDatabase];
+STDOUT:
+Msg 5011, Level 14, State 5, Server WIN-LQD18FVA9LS, Line 1
+User does not have permission to alter database 'MyTPCCDatabase', the database does not exist, or the database is not in a state that allows access checks.
+Msg 5069, Level 16, State 1, Server WIN-LQD18FVA9LS, Line 1
+ALTER DATABASE statement failed.
+
+Database 'MyTPCCDatabase' dropped (if it existed).
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist...
+Executing SQLCMD query: USE [master]; IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+Executing: sqlcmd.exe -S localhost -U sa -P Netapp1! -Q USE [master]; IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+STDOUT:
+Changed database context to 'master'.
+
+Executing SQLCMD query: USE [MyTPCCDatabase]; IF EXISTS (SELECT * FROM sys.database_principals WHERE name = N'my_hammerdb_user') DROP USER [my_hammerdb_user];
+Executing: sqlcmd.exe -S localhost -U sa -P Netapp1! -Q USE [MyTPCCDatabase]; IF EXISTS (SELECT * FROM sys.database_principals WHERE name = N'my_hammerdb_user') DROP USER [my_hammerdb_user];
+STDOUT:
+Msg 911, Level 16, State 1, Server WIN-LQD18FVA9LS, Line 1
+Database 'MyTPCCDatabase' does not exist. Make sure that the name is entered correctly.
+
+User 'my_hammerdb_user' and login dropped (if they existed).
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user'...
+Executing SQLCMD query: CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+Executing: sqlcmd.exe -S localhost -U sa -P Netapp1! -Q CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+Executing SQLCMD query: CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF; USE [MyTPCCDatabase]; CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+Executing: sqlcmd.exe -S localhost -U sa -P Netapp1! -Q CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF; USE [MyTPCCDatabase]; CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+STDOUT:
+Changed database context to 'MyTPCCDatabase'.
+
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe -f C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Usage: hammerdbcli [ tcl|python [ auto [ script_to_autoload.[ tcl|py ] ] ] ]
+
+WARNING: Schema build did not report success phrase. Review output: HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Usage: hammerdbcli [ tcl|python [ auto [ script_to_autoload.[ tcl|py ] ] ] ]
+
+
+
+Starting TPC-C benchmark for different Virtual Users: 1, 2, 3...
+
+--- Running benchmark with 1 Virtual Users ---
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_1VU.tcl'
+Executing benchmark for 1 VUs. Results will be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_1VU_20250626_012559.txt'
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_1VU.tcl'
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe -f C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_1VU.tcl
+WARNING: Benchmark for 1 VUs did not report clear success. Check 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_1VU_20250626_012559.txt' for full details.
+--- Benchmark for 1 Virtual Users Finished ---
+
+--- Running benchmark with 2 Virtual Users ---
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_2VU.tcl'
+Executing benchmark for 2 VUs. Results will be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_2VU_20250626_012559.txt'
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_2VU.tcl'
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe -f C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_2VU.tcl
+WARNING: Benchmark for 2 VUs did not report clear success. Check 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_2VU_20250626_012559.txt' for full details.
+--- Benchmark for 2 Virtual Users Finished ---
+
+--- Running benchmark with 3 Virtual Users ---
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_3VU.tcl'
+Executing benchmark for 3 VUs. Results will be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_3VU_20250626_012559.txt'
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_3VU.tcl'
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe -f C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_3VU.tcl
+WARNING: Benchmark for 3 VUs did not report clear success. Check 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results\TPCC_Results_8W_3VU_20250626_012559.txt' for full details.
+--- Benchmark for 3 Virtual Users Finished ---
+
+HammerDB TPC-C Benchmark Script Finished.
+All generated TCL scripts are in 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts'
+All benchmark results are in 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results'
+
+C:\Users\Administrator\Downloads>
