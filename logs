@@ -126,3 +126,14 @@ All generated TCL scripts are in 'C:\Users\Administrator\Downloads\HammerDB_TCL_
 All benchmark results are in 'C:\Users\Administrator\Downloads\HammerDB_Benchmark_Results'
 
 C:\Users\Administrator\Downloads>
+
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>sqlcmd -S localhost -U sa -P Netapp1! -Q "SELECT DB_ID('MyTPCCDatabase')"
+
+------
+     6
+
+(1 rows affected)
+
+C:\Users\Administrator\Downloads>sqlcmd -S localhost -U sa -P Netapp1! -Q "ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; IF DB_ID('MyTPCCDatabase') IS NOT NULL DROP DATABASE [MyTPCCDatabase];"
