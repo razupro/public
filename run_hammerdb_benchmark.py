@@ -163,37 +163,49 @@ def main():
 
     # --- 1. Drop Database if it exists ---
     print(f"\nAttempting to drop existing database '{args.db_name}' if it exists...")
+    # Add a small delay to ensure any lingering connections from previous tests are cleared.
+    time.sleep(5) 
     try:
-        invoke_sqlcmd_command(
+        stdout_db_drop, stderr_db_drop = invoke_sqlcmd_command( # Capture output
             args.instance_name, "sa", args.sa_password,
             f"ALTER DATABASE [{args.db_name}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; IF DB_ID('{args.db_name}') IS NOT NULL DROP DATABASE [{args.db_name}];"
         )
+        print(f"Database '{args.db_name}' drop attempt completed. SQLCMD Output (if any):\nSTDOUT:\n{stdout_db_drop}\nSTDERR:\n{stderr_db_drop}")
         print(f"Database '{args.db_name}' dropped (if it existed).")
     except Exception as e:
-        print(f"WARNING: Error dropping database (might not exist): {e}")
+        print(f"ERROR: Failed to drop database '{args.db_name}'. This is often due to active connections or permissions. Please ensure no one else is connected. Error: {e}")
+        # Exit here, as database operations are critical for benchmark
+        exit(1)
+
 
     # --- 2. Drop user and login if they exist ---
     print(f"\nAttempting to drop existing user '{args.hammerdb_user}' and login if they exist...")
+    # Add a small delay again for good measure
+    time.sleep(2)
     try:
         # Drop login (must be in master)
-        invoke_sqlcmd_command(
+        stdout_login_drop, stderr_login_drop = invoke_sqlcmd_command(
             args.instance_name, "sa", args.sa_password,
             f"USE [master]; IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'{args.hammerdb_user}') DROP LOGIN [{args.hammerdb_user}];"
         )
+        print(f"Login '{args.hammerdb_user}' drop attempt completed. SQLCMD Output (if any):\nSTDOUT:\n{stdout_login_drop}\nSTDERR:\n{stderr_login_drop}")
+
         # Drop user (in target DB context, if DB exists)
         # This will fail if the DB was just dropped and recreated, but that's fine.
         # This is more for cases where only the user/login needs cleaning.
         try:
-            invoke_sqlcmd_command(
+            stdout_user_drop, stderr_user_drop = invoke_sqlcmd_command(
                 args.instance_name, "sa", args.sa_password,
                 f"USE [{args.db_name}]; IF EXISTS (SELECT * FROM sys.database_principals WHERE name = N'{args.hammerdb_user}') DROP USER [{args.hammerdb_user}];"
             )
+            print(f"User '{args.hammerdb_user}' drop attempt in DB '{args.db_name}' completed. SQLCMD Output (if any):\nSTDOUT:\n{stdout_user_drop}\nSTDERR:\n{stderr_user_drop}")
         except Exception as e:
-            print(f"Note: Could not drop user '{args.hammerdb_user}' in '{args.db_name}' (might not exist or DB just dropped). {e}")
+            # If the DB was just dropped, this will correctly fail, so just log it as a note.
+            print(f"Note: Could not drop user '{args.hammerdb_user}' in '{args.db_name}' (database might not exist or user was not in that DB). Error: {e}")
         print(f"User '{args.hammerdb_user}' and login dropped (if they existed).")
     except Exception as e:
-        print(f"WARNING: Error dropping user/login: {e}")
-
+        print(f"ERROR: Failed to drop user/login '{args.hammerdb_user}'. Error: {e}")
+        exit(1) # Critical failure, exit
 
     # --- Create new database and HammerDB user ---
     print(f"\nCreating database '{args.db_name}' and login/user '{args.hammerdb_user}'...")
