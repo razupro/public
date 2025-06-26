@@ -298,25 +298,25 @@ def main():
 # --- Generate TCL script for Schema Build ---
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
-# Connect to SQL Server
-dbset db mssqls ; # Correct for HammerDB 5.0
-dbset server {args.instance_name}
-# dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
-dbset user {args.hammerdb_user}
-dbset password {args.hammerdb_user_password}
+# Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
+dbset db mssqls ;
+
+# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax)
+diset('mssqls','server','{args.instance_name}') ;
+diset('mssqls','user','{args.hammerdb_user}') ;
+diset('mssqls','password','{args.hammerdb_user_password}') ;
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
-diset('tpcc','tpcc','') ; 
-diset('tpcc','tpcc_driver','tcl') ; 
+diset('tpcc','tpcc_driver','tcl') ;
 diset('tpcc','tpcc_warehouses',{args.warehouses}) ;
 
 # Build Schema (HammerDB 5.0 syntax)
-loadscript() ; 
-vuset('vu',1) ; # Set 1 virtual user for schema build
-vucreate() ; # Create the virtual user session
-buildschema ; # Execute schema build
+loadscript() ;
+vuset('vu',1) ;
+vucreate() ;
+buildschema ;
 wait for buildschema complete
-vudestroy() ; # Destroy the virtual user session
+vudestroy() ;
 disconnect
 quit
 """
@@ -342,28 +342,29 @@ quit
         
 # Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
-# Connect to SQL Server
-dbset db mssqls ; # Correct for HammerDB 5.0
-dbset server {args.instance_name}
-# dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
-dbset user {args.hammerdb_user}
-dbset password {args.hammerdb_user_password}
+# Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
+dbset db mssqls ;
+
+
+# Set MSSQL connection parameters using diset (HammerDB 5.0 syntax)
+diset('mssqls','server','{args.instance_name}') ;
+diset('mssqls','user','{args.hammerdb_user}') ;
+diset('mssqls','password','{args.hammerdb_user_password}') ;
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax)
-diset('tpcc','tpcc','') ; # Set benchmark type to TPC-C
-diset('tpcc','tpcc_driver','tcl') ; # Set TPC-C driver to tcl
-diset('tpcc','tpcc_warehouses',{args.warehouses}) ; # Set number of TPC-C warehouses
-diset('tpcc','mssqls_driver','timed') ; # Set MSSQL driver type for TPC-C
-diset('tpcc','mssqls_rampup',{args.ramp_up_seconds}) ; # Set ramp-up time
-diset('tpcc','mssqls_duration',{args.run_time_seconds}) ; # Set duration
+diset('tpcc','tpcc_driver','tcl') ;
+diset('tpcc','tpcc_warehouses',{args.warehouses}) ;
+diset('tpcc','mssqls_driver','timed') ;
+diset('tpcc','mssqls_rampup',{args.ramp_up_seconds}) ;
+diset('tpcc','mssqls_duration',{args.run_time_seconds}) ;
 
-loadscript() ; # Load benchmark script (as seen in user's sample)
-vuset('vu',{vu_count}) ; # Set the specified number of virtual users
-vucreate() ; # Create the virtual user sessions
-vurun() ; # Run the virtual users
+loadscript() ;
+vuset('vu',{vu_count}) ;
+vucreate() ;
+vurun() ;
 
-print vu metrics ; # Print metrics to console/log
-vudestroy() ; # Destroy the virtual user sessions
+print vu metrics ;
+vudestroy() ;
 disconnect
 log off
 quit
