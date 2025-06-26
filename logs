@@ -137,3 +137,10 @@ C:\Users\Administrator\Downloads>sqlcmd -S localhost -U sa -P Netapp1! -Q "SELEC
 (1 rows affected)
 
 C:\Users\Administrator\Downloads>sqlcmd -S localhost -U sa -P Netapp1! -Q "ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; IF DB_ID('MyTPCCDatabase') IS NOT NULL DROP DATABASE [MyTPCCDatabase];"
+
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe -f C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Usage: hammerdbcli [ tcl|python [ auto [ script_to_autoload.[ tcl|py ] ] ] ]
