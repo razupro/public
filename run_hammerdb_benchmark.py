@@ -299,20 +299,22 @@ def main():
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Connect to SQL Server
-dbset db mssqls ; 
+dbset db mssqls ; # Correct for HammerDB 5.0
 dbset server {args.instance_name}
-dbset inst {args.instance_name}
+# dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
 dbset user {args.hammerdb_user}
 dbset password {args.hammerdb_user_password}
 dbset tpcc
 dbset tpcc_driver tcl
 dbset tpcc_warehouses {args.warehouses}
 
-# Build Schema
-# vuser auto is removed in HammerDB 5.0, directly use vu
-vu 1 ; # Only 1 virtual user is needed for schema build
-buildschema
+# Build Schema (HammerDB 5.0 syntax)
+loadscript() ; # Load benchmark script (as seen in user's sample)
+vuset('vu',1) ; # Set 1 virtual user for schema build
+vucreate() ; # Create the virtual user session
+buildschema ; # Execute schema build
 wait for buildschema complete
+vudestroy() ; # Destroy the virtual user session
 disconnect
 quit
 """
@@ -339,23 +341,29 @@ quit
 # Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Connect to SQL Server
-dbset db mssqls ;
+dbset db mssqls ; # Correct for HammerDB 5.0
 dbset server {args.instance_name}
-dbset inst {args.instance_name}
+# dbset inst {args.instance_name} ; # Removed as per HammerDB 5.0 syntax
 dbset user {args.hammerdb_user}
 dbset password {args.hammerdb_user_password}
 dbset tpcc
 dbset tpcc_driver tcl
 dbset tpcc_warehouses {args.warehouses}
 
-# Benchmark run
-# vuser auto is removed in HammerDB 5.0, directly use vu
-vu {vu_count} ; 
-load tpc-c
-timer {args.run_time_seconds}
-rampup {args.ramp_up_seconds}
-print vu metrics
-disconn
+# Benchmark run (HammerDB 5.0 syntax)
+# Set benchmark specific parameters using diset
+diset('tpcc','mssqls_driver','timed')
+diset('tpcc','mssqls_rampup',{args.ramp_up_seconds})
+diset('tpcc','mssqls_duration',{args.run_time_seconds})
+
+loadscript() ; # Load benchmark script (as seen in user's sample)
+vuset('vu',{vu_count}) ; # Set the specified number of virtual users
+vucreate() ; # Create the virtual user sessions
+vurun() ; # Run the virtual users
+
+print vu metrics ; # Print metrics to console/log
+vudestroy() ; # Destroy the virtual user sessions
+disconnect
 log off
 quit
 """
