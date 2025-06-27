@@ -300,27 +300,23 @@ def main():
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-
+dbset bm tpcc
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
 diset connection mssqls_user {args.hammerdb_user}
 diset connection mssqls_password {args.hammerdb_user_password}
-diset connection mssqls_dbase {args.db_name}
+diset connection mssqls_authentication sqlserver ; # Authentication is a connection parameter
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
-diset tpcc mssqls_server {args.instance_name}
-diset tpcc mssqls_user {args.hammerdb_user}
-diset tpcc mssqls_password {args.hammerdb_user_password}
-diset tpcc mssqls_dbase {args.db_name}
-diset tpcc mssqls_authentication sqlserver
+diset tpcc mssqls_dbase {args.db_name} ; # Database name is a tpcc parameter
+diset tpcc tpcc_driver test ; # Use 'test' driver for schema build
 diset tpcc count_ware {args.warehouses}
 diset tpcc total_iterations 1
 diset tpcc tpcc_vu 1 ; # For schema build
-diset tpcc mssqls_driver odbc ; # Use ODBC driver for schema build
 
 loadscript
-vuset('vu',1) ; # This is for the actual virtual user provisioning
+vuset vu 1 ; # Corrected vuset syntax: 'vuset vu <count>'
 vucreate
 buildschema
 wait for buildschema complete
@@ -352,29 +348,25 @@ quit
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-
+dbset bm tpcc
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
 diset connection mssqls_user {args.hammerdb_user}
 diset connection mssqls_password {args.hammerdb_user_password}
-diset connection mssqls_dbase {args.db_name}
+diset connection mssqls_authentication sqlserver
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
-diset tpcc mssqls_server {args.instance_name}
-diset tpcc mssqls_user {args.hammerdb_user}
-diset tpcc mssqls_password {args.hammerdb_user_password}
 diset tpcc mssqls_dbase {args.db_name}
-diset tpcc mssqls_authentication sqlserver
+diset tpcc tpcc_driver timed ; # Use 'timed' driver for benchmark run
 diset tpcc count_ware {args.warehouses}
 diset tpcc total_iterations 1
 diset tpcc tpcc_vu {vu_count} ; # Set based on current VU count for the run
-diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
 diset tpcc mssqls_rampup {args.ramp_up_seconds}
 diset tpcc mssqls_duration {args.run_time_seconds}
 
 loadscript
-vuset('vu',{vu_count}) ; # This is for the actual virtual user provisioning
+vuset vu {vu_count} ; # Corrected vuset syntax: 'vuset vu <count>'
 vucreate
 vurun
 
