@@ -317,7 +317,6 @@ diset tpcc mssqls_total_iterations 1
 diset tpcc mssqls_num_vu 1
 
 loadscript
-connect ; # Added explicit connect command
 buildschema
 quit
 """
@@ -363,7 +362,6 @@ diset tpcc mssqls_rampup {args.ramp_up_seconds}
 diset tpcc mssqls_duration {args.run_time_seconds}
 
 loadscript
-connect ; # Added explicit connect command
 vuset vu {vu_count}
 vucreate
 vurun
