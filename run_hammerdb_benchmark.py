@@ -89,7 +89,7 @@ def main():
 
     print(f"\nAttempting to drop existing user '{args.hammerdb_user}' and login if they exist via pyodbc...")
     # Drop login
-    if not run_sql_query(odbc_conn_str, f"IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'{args.hammerdb_user}') DROP LOGIN [{args.hammer_db_user}];", db_name="master"):
+    if not run_sql_query(odbc_conn_str, f"IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'{args.hammerdb_user}') DROP LOGIN [{args.hammerdb_user}];", db_name="master"): # CORRECTED LINE HERE
         print(f"WARNING: Failed to drop login '{args.hammerdb_user}'. It might not exist or permissions issue.")
     else:
         print(f"Login '{args.hammerdb_user}' dropped (if it existed) via pyodbc.")
