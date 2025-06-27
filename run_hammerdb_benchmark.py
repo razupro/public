@@ -125,18 +125,17 @@ def main():
         return
     print(f"Database '{args.db_name}' and user '{args.hammerdb_user}' created successfully via pyodbc.")
 
-# --- Generate TCL script for Schema Build ---
-    print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
-    schema_build_tcl = f"""
+print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
+schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
 dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid "sa" ; # TEMPORARY: Testing with 'sa' user
-diset connection mssqls_pass "Netapp1!" ; # TEMPORARY: Testing with 'sa' password
-diset connection mssqls_authentication SQLSERVER
+diset connection mssqls_uid {args.hammerdb_user} ; # Revert to actual HammerDB user
+diset connection mssqls_pass {args.hammerdb_user_password} ; # Revert to actual HammerDB user password
+diset connection mssqls_authentication windows ; # Change to Windows Authentication
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false
 diset connection mssqls_trust_server_cert false
@@ -179,17 +178,17 @@ quit
         print(f"ERROR: Error running HammerDB CLI for schema build: {e}")
         return
 
-# Generate TCL script for Benchmark Run
-        benchmark_run_tcl = f"""
+print(f"\nGenerating TCL script for benchmark run with {vu_count} VUs...")
+benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
 dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid "sa" ; # TEMPORARY: Testing with 'sa' user
-diset connection mssqls_pass "Netapp1!" ; # TEMPORARY: Testing with 'sa' password
-diset connection mssqls_authentication SQLSERVER
+diset connection mssqls_uid {args.hammerdb_user} ; # Revert to actual HammerDB user
+diset connection mssqls_pass {args.hammerdb_user_password} ; # Revert to actual HammerDB user password
+diset connection mssqls_authentication windows ; # Change to Windows Authentication
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false
 diset connection mssqls_trust_server_cert false
