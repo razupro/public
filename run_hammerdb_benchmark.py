@@ -207,7 +207,7 @@ diset connection mssqls_trust_server_cert false
 diset tpcc mssqls_dbase {args.db_name}
 diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
 diset tpcc mssqls_count_ware {args.warehouses}
-diset tpcc mssqls_total_iterations 1
+diset tpcc mssqls_total_iterations 0
 diset tpcc mssqls_num_vu {vu_count}
 diset tpcc mssqls_rampup {args.ramp_up_seconds}
 diset tpcc mssqls_duration {args.run_time_seconds}
