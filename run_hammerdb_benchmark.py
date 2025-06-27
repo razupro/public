@@ -296,9 +296,8 @@ def main():
         exit(1)
 
 
-# --- Generate TCL script for Schema Build ---
-    print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
-    schema_build_tcl = f"""
+print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
+schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
 dbset bm TPC-C
@@ -308,6 +307,7 @@ diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
+diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server" ; # Corrected to ODBC Driver 17
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
@@ -351,6 +351,7 @@ diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
+diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server" ; # Explicitly set ODBC Driver
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
