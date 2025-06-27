@@ -217,7 +217,6 @@ diset tpcc mssqls_num_vu {vu_count}
 diset tpcc mssqls_rampup {rampup_minutes} ; # Value in minutes
 diset tpcc mssqls_duration {duration_minutes} ; # Value in minutes
 
-# REMOVED: log level 4 - This command caused an "invalid command name" error
 loadscript
 vuset vu {vu_count}
 vucreate
@@ -225,7 +224,6 @@ vurun
 
 print vu metrics
 vudestroy
-log off
 quit
 """
         benchmark_tcl_file = os.path.join(tcl_scripts_dir, f"run_benchmark_{args.warehouses}W_{vu_count}VU.tcl")
