@@ -94,9 +94,6 @@ def main():
         print(f"Login '{args.hammerdb_user}' dropped (if it existed) via pyodbc.")
 
     # Drop user from the database if the database still exists or was just created (shouldn't be, but as a safeguard)
-    # This part is tricky because the DB might not exist if it was just dropped.
-    # We will assume that if the DB was dropped, the user in that DB is also gone.
-    # If the DB was NOT dropped (because it didn't exist), then there's no user to drop within it.
     print(f"Database '{args.db_name}' does not exist, skipping user drop from database.")
     print(f"User '{args.hammerdb_user}' and login cleanup complete.")
 
@@ -188,6 +185,13 @@ quit
     for vu_count in args.virtual_users:
         print(f"\n--- Starting Benchmark for {vu_count} Virtual Users ---")
         
+        # Convert seconds to minutes for HammerDB parameters
+        rampup_minutes = args.ramp_up_seconds / 60
+        duration_minutes = args.run_time_seconds / 60
+
+        print(f"DEBUG: Calculated rampup_minutes = {rampup_minutes}")
+        print(f"DEBUG: Calculated duration_minutes = {duration_minutes}")
+
         # Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
@@ -207,10 +211,13 @@ diset connection mssqls_trust_server_cert false
 diset tpcc mssqls_dbase {args.db_name}
 diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
 diset tpcc mssqls_count_ware {args.warehouses}
-diset tpcc mssqls_total_iterations 0
+diset tpcc mssqls_total_iterations 0 ; # Set to 0 for continuous operation during duration
 diset tpcc mssqls_num_vu {vu_count}
-diset tpcc mssqls_rampup {args.ramp_up_seconds}
-diset tpcc mssqls_duration {args.run_time_seconds}
+diset tpcc mssqls_rampup {rampup_minutes} ; # Value in minutes
+diset tpcc mssqls_duration {duration_minutes} ; # Value in minutes
+
+# Set a higher log level for more detailed output during benchmark run
+log level 4
 
 loadscript
 vuset vu {vu_count}
