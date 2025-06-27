@@ -147,3 +147,513 @@ An unexpected error occurred: Command failed (Exit Code: 1)
 ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
 
 C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/26/2025  09:21 PM    <DIR>          .
+06/26/2025  10:09 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/26/2025  09:21 PM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/26/2025  08:27 PM            19,354 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              16 File(s)  1,747,182,988 bytes
+               4 Dir(s)  192,557,215,744 bytes free
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>rm run_hammerdb_benchmark.py
+'rm' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/26/2025  09:38 PM    <DIR>          .
+06/26/2025  10:09 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/26/2025  09:21 PM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/26/2025  09:38 PM            19,071 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              16 File(s)  1,747,182,705 bytes
+               4 Dir(s)  192,565,432,320 bytes free
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL Connection Test Successful.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' (ID: 5) exists. Attempting to drop it...
+Executing SQL query via pyodbc (DB: master): ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): DROP DATABASE [MyTPCCDatabase];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' dropped successfully via pyodbc.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Executing SQL query via pyodbc (DB: master): IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Login 'my_hammerdb_user' dropped (if it existed) via pyodbc.
+Database 'MyTPCCDatabase' does not exist, skipping user drop from database.
+User 'my_hammerdb_user' and login cleanup complete.
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user' via pyodbc...
+Executing SQL query via pyodbc (DB: master): CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: MyTPCCDatabase): CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully via pyodbc.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl' (using v5.0 syntax)
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe tcl auto C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (69,632 bytes)
+Database set to MSSQLServer
+
+Unknown benchmark TPCC, choose one from TPROC-C TPROC-H (or compatible names TPC-C TPC-H)
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_user" doesn't, key "mssqls_user" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_password" doesn't, key "mssqls_password" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Changed connection:mssqls_authentication from windows to sqlserver for MSSQLServer
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_driver" doesn't, key "tpcc_driver" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "count_ware" doesn't, key "count_ware" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "total_iterations" doesn't, key "total_iterations" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_vu" doesn't, key "tpcc_vu" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+2 Virtual Users Created with Monitor VU
+
+Error: Cannot build schema with Virtual Users active, destroy Virtual Users first
+
+STDERR:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+ERROR: Command failed with exit code 1
+Error details:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+An unexpected error occurred: Command failed (Exit Code: 1)
+ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
+
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+Could Not Find C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL Connection Test Successful.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' (ID: 5) exists. Attempting to drop it...
+Executing SQL query via pyodbc (DB: master): ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): DROP DATABASE [MyTPCCDatabase];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' dropped successfully via pyodbc.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Executing SQL query via pyodbc (DB: master): IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Login 'my_hammerdb_user' dropped (if it existed) via pyodbc.
+Database 'MyTPCCDatabase' does not exist, skipping user drop from database.
+User 'my_hammerdb_user' and login cleanup complete.
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user' via pyodbc...
+Executing SQL query via pyodbc (DB: master): CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: MyTPCCDatabase): CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully via pyodbc.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl' (using v5.0 syntax)
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe tcl auto C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (69,632 bytes)
+Database set to MSSQLServer
+
+Unknown benchmark TPCC, choose one from TPROC-C TPROC-H (or compatible names TPC-C TPC-H)
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_user" doesn't, key "mssqls_user" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_password" doesn't, key "mssqls_password" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Value sqlserver for connection:mssqls_authentication is the same as existing value sqlserver, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_driver" doesn't, key "tpcc_driver" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "count_ware" doesn't, key "count_ware" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "total_iterations" doesn't, key "total_iterations" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_vu" doesn't, key "tpcc_vu" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+2 Virtual Users Created with Monitor VU
+
+Error: Cannot build schema with Virtual Users active, destroy Virtual Users first
+
+STDERR:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+ERROR: Command failed with exit code 1
+Error details:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+An unexpected error occurred: Command failed (Exit Code: 1)
+ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
+
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/26/2025  09:40 PM    <DIR>          .
+06/26/2025  10:09 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/26/2025  09:21 PM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/26/2025  09:40 PM            19,071 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              16 File(s)  1,747,182,705 bytes
+               4 Dir(s)  192,561,803,264 bytes free
+
+C:\Users\Administrator\Downloads>dle run_hammerdb_benchmark.py
+'dle' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/26/2025  09:42 PM    <DIR>          .
+06/26/2025  10:09 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/26/2025  09:21 PM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/26/2025  09:42 PM            19,071 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              16 File(s)  1,747,182,705 bytes
+               4 Dir(s)  192,559,575,040 bytes free
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL Connection Test Successful.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' (ID: 5) exists. Attempting to drop it...
+Executing SQL query via pyodbc (DB: master): ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): DROP DATABASE [MyTPCCDatabase];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' dropped successfully via pyodbc.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Executing SQL query via pyodbc (DB: master): IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Login 'my_hammerdb_user' dropped (if it existed) via pyodbc.
+Database 'MyTPCCDatabase' does not exist, skipping user drop from database.
+User 'my_hammerdb_user' and login cleanup complete.
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user' via pyodbc...
+Executing SQL query via pyodbc (DB: master): CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: MyTPCCDatabase): CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully via pyodbc.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl' (using v5.0 syntax)
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe tcl auto C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (69,632 bytes)
+Database set to MSSQLServer
+
+Unknown benchmark TPCC, choose one from TPROC-C TPROC-H (or compatible names TPC-C TPC-H)
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_user" doesn't, key "mssqls_user" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_password" doesn't, key "mssqls_password" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Value sqlserver for connection:mssqls_authentication is the same as existing value sqlserver, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_driver" doesn't, key "tpcc_driver" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "count_ware" doesn't, key "count_ware" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "total_iterations" doesn't, key "total_iterations" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_vu" doesn't, key "tpcc_vu" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+2 Virtual Users Created with Monitor VU
+
+Error: Cannot build schema with Virtual Users active, destroy Virtual Users first
+
+STDERR:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+ERROR: Command failed with exit code 1
+Error details:
+invalid command name "wait"
+    while executing
+"wait for buildschema complete"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 23)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+An unexpected error occurred: Command failed (Exit Code: 1)
+ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
+
+C:\Users\Administrator\Downloads>
