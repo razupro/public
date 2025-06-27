@@ -301,32 +301,24 @@ def main():
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-dbset bm TPC-C ; # Corrected benchmark name from tpcc to TPC-C
-
-# --- DEBUGGING: Print dictionary structure ---
-print dict
-# --- END DEBUGGING ---
+dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_user {args.hammerdb_user} ; # Keeping as per sample, despite warnings
-diset connection mssqls_password {args.hammerdb_user_password} ; # Keeping as per sample, despite warnings
+diset connection mssqls_uid {args.hammerdb_user}
+diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
-
-# --- DEBUGGING: Print dictionary structure ---
-print dict
-# --- END DEBUGGING ---
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
 diset tpcc mssqls_driver test ; # Use 'test' driver for schema build
-diset tpcc count_ware {args.warehouses} ; # Keeping as per sample, despite warnings
-diset tpcc total_iterations 1 ; # Keeping as per sample, despite warnings
-diset tpcc tpcc_vu 1 ; # Keeping as per sample, despite warnings
+diset tpcc mssqls_count_ware {args.warehouses}
+diset tpcc mssqls_total_iterations 1
+diset tpcc mssqls_num_vu 1
 
 loadscript
-buildschema ; # Removed vuset/vucreate and wait command
-disconnect
+connect ; # Added explicit connect command
+buildschema
 quit
 """
     schema_tcl_file = generate_tcl_script(f"build_schema_{args.warehouses}W.tcl", schema_build_tcl)
@@ -353,31 +345,31 @@ quit
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-dbset bm TPC-C ; # Corrected benchmark name from tpcc to TPC-C
+dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_user {args.hammerdb_user} ; # Keeping as per sample, despite warnings
-diset connection mssqls_password {args.hammerdb_user_password} ; # Keeping as per sample, despite warnings
+diset connection mssqls_uid {args.hammerdb_user}
+diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
 diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
-diset tpcc count_ware {args.warehouses} ; # Keeping as per sample, despite warnings
-diset tpcc total_iterations 1 ; # Keeping as per sample, despite warnings
-diset tpcc tpcc_vu {vu_count} ; # Keeping as per sample, despite warnings
+diset tpcc mssqls_count_ware {args.warehouses}
+diset tpcc mssqls_total_iterations 1
+diset tpcc mssqls_num_vu {vu_count}
 diset tpcc mssqls_rampup {args.ramp_up_seconds}
 diset tpcc mssqls_duration {args.run_time_seconds}
 
 loadscript
-vuset vu {vu_count} ; # Corrected vuset syntax: 'vuset vu <count>'
+connect ; # Added explicit connect command
+vuset vu {vu_count}
 vucreate
 vurun
 
 print vu metrics
 vudestroy
-disconnect
 log off
 quit
 """
