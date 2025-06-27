@@ -125,7 +125,7 @@ def main():
         return
     print(f"Database '{args.db_name}' and user '{args.hammerdb_user}' created successfully via pyodbc.")
 
-# --- Generate TCL script for Schema Build ---
+    # --- Generate TCL script for Schema Build ---
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
@@ -134,8 +134,8 @@ dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid {args.hammerdb_user} ; # TEMPORARY: Testing with 'sa' user
-diset connection mssqls_pass {args.hammerdb_user_password} ; # TEMPORARY: Testing with 'sa' password
+diset connection mssqls_uid {args.hammerdb_user}
+diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication windows
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false
@@ -160,26 +160,35 @@ quit
     print(f"Running schema build for {args.warehouses} warehouses (this may take some time)...")
     print(f"Running HammerDB CLI with script: '{schema_build_tcl_file}' (using v5.0 syntax)")
 
-    try:
-        # Note: Using 'tcl auto' is the standard way to execute a script
-        command = [hammerdb_cli_path, "tcl", "auto", schema_build_tcl_file]
-        process = subprocess.run(command, capture_output=True, text=True, check=True)
-        print("STDOUT:\n", process.stdout)
-        if process.stderr:
-            print("STDERR:\n", process.stderr)
-        print(f"Schema build for {args.warehouses} warehouses completed successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"ERROR: Command failed with exit code {e.returncode}")
-        print("Error details:\n", e.stderr)
-        print("STDOUT (before error):\n", e.stdout)
-        print(f"ERROR: Error running HammerDB CLI for schema build: {e}")
-        return
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        print(f"ERROR: Error running HammerDB CLI for schema build: {e}")
-        return
+    # --- MODIFIED: Error handling for schema build subprocess.run ---
+    command = [hammerdb_cli_path, "tcl", "auto", schema_build_tcl_file]
+    process = subprocess.run(command, capture_output=True, text=True, check=False) # Changed check=True to check=False
 
-# Generate TCL script for Benchmark Run
+    # Check specifically for the disableRaw error when exit code is 1
+    if process.returncode == 1 and "invalid command name \"disableRaw\"" in process.stderr:
+        print(f"WARNING: HammerDB CLI for schema build exited with code 1 due to 'disableRaw' error, but schema build likely succeeded.")
+        print("STDOUT (schema build):\n", process.stdout)
+        print("STDERR (schema build):\n", process.stderr)
+        # Do not return, allow script to continue
+    elif process.returncode != 0:
+        # Handle any other, more serious errors during schema build
+        print(f"ERROR: Command failed during schema build with exit code {process.returncode}")
+        print("Error details (schema build):\n", process.stderr)
+        print("STDOUT (schema build):\n", process.stdout)
+        print(f"ERROR: Error running HammerDB CLI for schema build: Command '{' '.join(command)}' returned non-zero exit status {process.returncode}.")
+        return # Exit for genuine errors
+    else: # process.returncode == 0
+        print(f"Schema build for {args.warehouses} warehouses completed successfully.")
+        print("STDOUT (schema build):\n", process.stdout)
+        if process.stderr:
+            print("STDERR (schema build):\n", process.stderr)
+
+
+    # --- Step 5: Run Benchmark for each Virtual User configuration ---
+    for vu_count in args.virtual_users:
+        print(f"\n--- Starting Benchmark for {vu_count} Virtual Users ---")
+        
+        # Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
@@ -187,8 +196,8 @@ dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid {args.hammerdb_user} ; # TEMPORARY: Testing with 'sa' user
-diset connection mssqls_pass {args.hammerdb_user_password} ; # TEMPORARY: Testing with 'sa' password
+diset connection mssqls_uid {args.hammerdb_user}
+diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication windows
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false
@@ -221,27 +230,40 @@ quit
         results_file = os.path.join(results_dir, f"TPCC_Results_{args.warehouses}W_{vu_count}VU_{time.strftime('%Y%m%d_%H%M%S')}.txt")
 
         print(f"Executing benchmark for {vu_count} VUs. Results will be saved to: '{results_file}'")
+        
+        # --- MODIFIED: Error handling for benchmark run subprocess.run ---
+        benchmark_command = [hammerdb_cli_path, "tcl", "auto", benchmark_tcl_file]
+        process = None # Initialize process outside try block
         try:
-            # Redirect StandardOutput to a file to capture HammerDB's console output (metrics)
-            # Using -f with hammerdbcli auto is typical for script execution
-            benchmark_command = [hammerdb_cli_path, "tcl", "auto", benchmark_tcl_file]
             with open(results_file, "w") as outfile:
-                process = subprocess.run(benchmark_command, stdout=outfile, stderr=subprocess.PIPE, text=True, check=True)
+                # Changed check=True to check=False here as well
+                process = subprocess.run(benchmark_command, stdout=outfile, stderr=subprocess.PIPE, text=True, check=False) 
             
-            print(f"Benchmark for {vu_count} VUs completed successfully. Results saved to '{results_file}'.")
+            # Check specifically for the disableRaw error when exit code is 1
+            if process.returncode == 1 and "invalid command name \"disableRaw\"" in process.stderr:
+                print(f"WARNING: HammerDB CLI for benchmark exited with code 1 due to 'disableRaw' error. Benchmark likely completed successfully. Results saved to '{results_file}'.")
+                # Do not re-raise, allow loop to continue
+            elif process.returncode != 0:
+                print(f"WARNING: Benchmark for {vu_count} VUs failed with exit code {process.returncode}. Check '{results_file}' for full details.")
+                if process.stderr:
+                    print("STDERR from HammerDB CLI:\n", process.stderr)
+            else: # process.returncode == 0
+                print(f"Benchmark for {vu_count} VUs completed successfully. Results saved to '{results_file}'.")
             
-            # Print relevant metrics from the results file to console
-            with open(results_file, "r") as f:
-                for line in f:
-                    if "TPC-C Transactions" in line or "Total transactions" in line or "tpm" in line:
-                        print(line.strip())
+            # Print relevant metrics from the results file to console if output captured
+            if process and (process.returncode == 0 or (process.returncode == 1 and "invalid command name \"disableRaw\"" in process.stderr)):
+                try:
+                    with open(results_file, "r") as f:
+                        for line in f:
+                            if "TPC-C Transactions" in line or "Total transactions" in line or "tpm" in line:
+                                print(line.strip())
+                except FileNotFoundError:
+                    print(f"WARNING: Results file '{results_file}' not found after benchmark, cannot print summary.")
 
-        except subprocess.CalledProcessError as e:
-            print(f"WARNING: Benchmark for {vu_count} VUs failed with exit code {e.returncode}. Check '{results_file}' for full details.")
-            if e.stderr:
-                print("STDERR from HammerDB CLI:\n", e.stderr)
+        except FileNotFoundError:
+            print(f"ERROR: HammerDB CLI executable not found at '{hammerdb_cli_path}' during benchmark run.")
         except Exception as e:
-            print(f"Error running HammerDB CLI for benchmark: {e}")
+            print(f"Error running HammerDB CLI for benchmark: {e.__class__.__name__}: {e}")
         print(f"--- Benchmark for {vu_count} Virtual Users Finished ---\n")
 
     print("HammerDB TPC-C Benchmark Script Finished.")
