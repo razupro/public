@@ -5506,4 +5506,845 @@ Traceback (most recent call last):
                                                                                                                                      ^^^^^^^^^^^^^^^^^^^
 AttributeError: 'Namespace' object has no attribute 'hammer_db_user'. Did you mean: 'hammerdb_user'?
 
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL query executed successfully via pyodbc.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' does not exist, skipping drop.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 284, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 92, in main
+    if not run_sql_query(odbc_conn_str, f"IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'{args.hammerdb_user}') DROP LOGIN [{args.hammer_db_user}];", db_name="master"):
+                                                                                                                                     ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Namespace' object has no attribute 'hammer_db_user'. Did you mean: 'hammerdb_user'?
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL query executed successfully via pyodbc.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' does not exist, skipping drop.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 284, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 92, in main
+    if not run_sql_query(odbc_conn_str, f"IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'{args.hammerdb_user}') DROP LOGIN [{args.hammer_db_user}];", db_name="master"):
+                                                                                                                                     ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Namespace' object has no attribute 'hammer_db_user'. Did you mean: 'hammerdb_user'?
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 287
+    print(f"All benchmark results are in '{results_dir}'")import argparse
+                                                          ^^^^^^
+SyntaxError: invalid syntax
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 287
+    print(f"All benchmark results are in '{results_dir}'")import argparse
+                                                          ^^^^^^
+SyntaxError: invalid syntax
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+python: can't open file 'C:\\Users\\Administrator\\Downloads\\run_hammerdb_benchmark.py': [Errno 2] No such file or directory
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/27/2025  06:33 AM    <DIR>          .
+06/27/2025  01:31 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/27/2025  06:21 AM    <DIR>          HammerDB_Results
+06/27/2025  03:16 AM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/27/2025  01:20 AM            72,813 logs.txt
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/27/2025  06:33 AM            30,657 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              17 File(s)  1,747,267,104 bytes
+               5 Dir(s)  191,795,748,864 bytes free
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+  File "C:\Users\Administrator\Downloads\run_hammerdb_benchmark.py", line 287
+    print(f"All benchmark results are in '{results_dir}'")import argparse
+                                                          ^^^^^^
+SyntaxError: invalid syntax
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>
+C:\Users\Administrator\Downloads>dir
+ Volume in drive C has no label.
+ Volume Serial Number is 34E6-68C1
+
+ Directory of C:\Users\Administrator\Downloads
+
+06/27/2025  06:35 AM    <DIR>          .
+06/27/2025  01:31 AM    <DIR>          ..
+06/24/2025  07:22 PM               223 cleanup.sql
+06/24/2025  07:22 PM               416 cleanup_sql.ps1
+06/24/2025  04:30 AM        43,568,160 HammerDB-5.0-Win-x64-Setup.exe
+06/26/2025  09:21 PM    <DIR>          HammerDB_Benchmark_Results
+06/27/2025  06:21 AM    <DIR>          HammerDB_Results
+06/27/2025  03:16 AM    <DIR>          HammerDB_TCL_Scripts
+06/24/2025  04:29 AM             2,740 Install-HammerDB.ps1
+06/27/2025  01:20 AM            72,813 logs.txt
+06/23/2025  07:19 AM         7,086,080 msodbcsql.msi
+06/24/2025  08:03 PM             2,020 mssql_tpcc_benchmark_template.tcl
+06/25/2025  08:59 AM        28,838,672 python-3.13.5-amd64.exe
+06/24/2025  05:37 AM            13,145 Run-HammerDB_TPCC_Benchmark.ps1
+06/27/2025  06:35 AM            15,329 run_hammerdb_benchmark.py
+06/24/2025  08:06 PM             1,561 run_tpcc_benchmark.bat
+06/21/2025  09:55 AM             3,524 Setup-WindowsVM.ps1
+06/23/2025  07:17 AM         4,290,992 SQL2022-SSEI-Dev.exe
+06/23/2025  09:24 AM     1,163,053,056 SQLServer2022-x64-ENU-Dev.iso
+06/23/2025  09:40 AM       495,847,104 SSMS-Setup-ENU.exe
+06/24/2025  05:03 AM               509 test.ps1
+06/23/2025  07:22 AM         4,455,432 vs_SSMS.exe
+              17 File(s)  1,747,251,776 bytes
+               5 Dir(s)  191,795,691,520 bytes free
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL query executed successfully via pyodbc.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' does not exist, skipping drop.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+SQL query executed successfully via pyodbc.
+Login 'my_hammerdb_user' dropped (if it existed) via pyodbc.
+Database 'MyTPCCDatabase' does not exist, skipping user drop from database.
+User 'my_hammerdb_user' and login cleanup complete.
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user' via pyodbc...
+SQL query executed successfully via pyodbc.
+SQL query executed successfully via pyodbc.
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully via pyodbc.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl' (using v5.0 syntax)
+WARNING: HammerDB CLI for schema build exited with code 1 due to 'disableRaw' error, but schema build likely succeeded.
+STDOUT (schema build):
+ HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (110,592 bytes)
+Database set to MSSQLServer
+
+Benchmark set to TPC-C for MSSQLServer
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Value my_hammerdb_user for connection:mssqls_uid is the same as existing value my_hammerdb_user, no change made
+
+Value MyStrongPassword123! for connection:mssqls_pass is the same as existing value MyStrongPassword123!, no change made
+
+Value windows for connection:mssqls_authentication is the same as existing value windows, no change made
+
+Value ODBC Driver 17 for SQL Server for connection:mssqls_odbc_driver is the same as existing value ODBC Driver 17 for SQL Server, no change made
+
+Value false for connection:mssqls_encrypt_connection is the same as existing value false, no change made
+
+Value false for connection:mssqls_trust_server_cert is the same as existing value false, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Clearing Script, reload script to activate new setting
+
+Script cleared
+
+Changed tpcc:mssqls_driver from timed to test for MSSQLServer
+
+Value 8 for tpcc:mssqls_count_ware is the same as existing value 8, no change made
+
+Changed tpcc:mssqls_total_iterations from 0 to 1 for MSSQLServer
+
+Changed tpcc:mssqls_num_vu from 3 to 1 for MSSQLServer
+
+Script loaded, Type "print script" to view
+
+Script cleared
+
+Building 8 Warehouses(s) with 1 Virtual User
+Ready to create a 8 Warehouse MS SQL Server TPROC-C schema
+in host LOCALHOST in database MYTPCCDATABASE?
+
+Enter yes or no: replied yes
+
+Vuser 1 created - WAIT IDLE
+
+Vuser 1:RUNNING
+
+Vuser 1:CREATING MYTPCCDATABASE SCHEMA
+
+Vuser 1:CHECKING IF DATABASE MyTPCCDatabase EXISTS
+
+Vuser 1:Empty database MyTPCCDatabase exists
+
+Vuser 1:Using existing empty Database MyTPCCDatabase for Schema build
+
+Vuser 1:CREATING TPCC TABLES
+
+Vuser 1:Loading Item
+
+Vuser 1:Loading Items - 50000 Fri Jun 27 06:37:53 PDT 2025
+
+Vuser 1:Loading Items - 100000 Fri Jun 27 06:39:59 PDT 2025
+
+Vuser 1:Item done
+
+Vuser 1:Start:Fri Jun 27 06:39:59 PDT 2025
+
+Vuser 1:Loading Warehouse
+
+Vuser 1:Loading Stock Wid=1 Fri Jun 27 06:39:59 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=2 Fri Jun 27 06:40:09 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=3 Fri Jun 27 06:40:18 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=4 Fri Jun 27 06:40:26 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=5 Fri Jun 27 06:40:34 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=6 Fri Jun 27 06:40:42 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=7 Fri Jun 27 06:40:51 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Stock Wid=8 Fri Jun 27 06:40:58 PDT 2025
+
+Vuser 1:Loading Stock - 20000
+
+Vuser 1:Loading Stock - 40000
+
+Vuser 1:Loading Stock - 60000
+
+Vuser 1:Loading Stock - 80000
+
+Vuser 1:Loading Stock - 100000
+
+Vuser 1:Loading District
+
+Vuser 1:District done
+
+Vuser 1:Loading Customer for WID=1 Fri Jun 27 06:41:06 PDT 2025
+
+Vuser 1:Loading Customer for WID=2 Fri Jun 27 06:41:09 PDT 2025
+
+Vuser 1:Loading Customer for WID=3 Fri Jun 27 06:41:13 PDT 2025
+
+Vuser 1:Loading Customer for WID=4 Fri Jun 27 06:41:18 PDT 2025
+
+Vuser 1:Loading Customer for WID=5 Fri Jun 27 06:41:22 PDT 2025
+
+Vuser 1:Loading Customer for WID=6 Fri Jun 27 06:41:25 PDT 2025
+
+Vuser 1:Loading Customer for WID=7 Fri Jun 27 06:41:29 PDT 2025
+
+Vuser 1:Loading Customer for WID=8 Fri Jun 27 06:41:33 PDT 2025
+
+Vuser 1:Loading Orders for W=1 Fri Jun 27 06:41:36 PDT 2025
+
+Vuser 1:Loading Orders for W=2 Fri Jun 27 06:41:42 PDT 2025
+
+Vuser 1:Loading Orders for W=3 Fri Jun 27 06:41:48 PDT 2025
+
+Vuser 1:Loading Orders for W=4 Fri Jun 27 06:41:54 PDT 2025
+
+Vuser 1:Loading Orders for W=5 Fri Jun 27 06:42:00 PDT 2025
+
+Vuser 1:Loading Orders for W=6 Fri Jun 27 06:42:06 PDT 2025
+
+Vuser 1:Loading Orders for W=7 Fri Jun 27 06:42:12 PDT 2025
+
+Vuser 1:Loading Orders for W=8 Fri Jun 27 06:42:18 PDT 2025
+
+Vuser 1:End:Fri Jun 27 06:42:24 PDT 2025
+
+Vuser 1:CREATING TPCC INDEXES
+
+Vuser 1:CREATING TPCC STORED PROCEDURES
+
+Vuser 1:UPDATING SCHEMA STATISTICS
+
+Vuser 1:MYTPCCDATABASE SCHEMA COMPLETE
+
+Vuser 1:FINISHED SUCCESS
+
+ALL VIRTUAL USERS COMPLETE
+
+Shutting down HammerDB CLI
+
+STDERR (schema build):
+ invalid command name "disableRaw"
+    while executing
+"disableRaw"
+    (procedure "lineInput" line 5)
+    invoked from within
+"lineInput"
+    (procedure "restore" line 2)
+    invoked from within
+"restore "
+    (procedure "TclReadLine::doExit" line 12)
+    invoked from within
+"TclReadLine::doExit"
+    invoked from within
+"if [expr {[llength [info procs TclReadLine::doExit]] > 0}] {
+    #in Tcl TclReadLine is loaded call exit
+    TclReadLine::doExit
+    } else {
+    #in ..."
+    (procedure "quit" line 3)
+    invoked from within
+"quit"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 24)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+
+--- Starting Benchmark for 1 Virtual Users ---
+DEBUG: Calculated rampup_minutes = 1.0
+DEBUG: Calculated duration_minutes = 5.0
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_1VU.tcl'
+Executing benchmark for 1 VUs. Results will also be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_1VU_20250627_071213.txt'
+
+--- HammerDB CLI STDOUT (from capture) ---
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (110,592 bytes)
+Database set to MSSQLServer
+
+Benchmark set to TPC-C for MSSQLServer
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Value my_hammerdb_user for connection:mssqls_uid is the same as existing value my_hammerdb_user, no change made
+
+Value MyStrongPassword123! for connection:mssqls_pass is the same as existing value MyStrongPassword123!, no change made
+
+Value windows for connection:mssqls_authentication is the same as existing value windows, no change made
+
+Value ODBC Driver 17 for SQL Server for connection:mssqls_odbc_driver is the same as existing value ODBC Driver 17 for SQL Server, no change made
+
+Value false for connection:mssqls_encrypt_connection is the same as existing value false, no change made
+
+Value false for connection:mssqls_trust_server_cert is the same as existing value false, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Clearing Script, reload script to activate new setting
+
+Script cleared
+
+Changed tpcc:mssqls_driver from test to timed for MSSQLServer
+
+Value 8 for tpcc:mssqls_count_ware is the same as existing value 8, no change made
+
+Changed tpcc:mssqls_total_iterations from 1 to 0 for MSSQLServer
+
+Value 1 for tpcc:mssqls_num_vu is the same as existing value 1, no change made
+
+Value 1.0 for tpcc:mssqls_rampup is the same as existing value 1.0, no change made
+
+Value 5.0 for tpcc:mssqls_duration is the same as existing value 5.0, no change made
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+2 Virtual Users Created with Monitor VU
+
+Vuser 1:RUNNING
+
+Vuser 1:DBVersion:16.0.1000.6
+
+Vuser 1:Beginning rampup time of 1.0 minutes
+
+Vuser 2:RUNNING
+
+Vuser 2:Processing 0 transactions with output suppressed...
+
+Vuser 2:FINISHED SUCCESS
+
+Cannot detect rampup and duration times, keepalive for main thread not active
+
+Warning: a running Virtual User was terminated, any pending output has been discarded
+
+Vuser 1:FINISHED FAILED
+
+ALL VIRTUAL USERS COMPLETE
+
+vudestroy success
+
+Shutting down HammerDB CLI
+
+--- HammerDB CLI STDERR (from capture) ---
+invalid command name "disableRaw"
+    while executing
+"disableRaw"
+    (procedure "lineInput" line 5)
+    invoked from within
+"lineInput"
+    (procedure "restore" line 2)
+    invoked from within
+"restore "
+    (procedure "TclReadLine::doExit" line 12)
+    invoked from within
+"TclReadLine::doExit"
+    invoked from within
+"if [expr {[llength [info procs TclReadLine::doExit]] > 0}] {
+    #in Tcl TclReadLine is loaded call exit
+    TclReadLine::doExit
+    } else {
+    #in ..."
+    (procedure "quit" line 3)
+    invoked from within
+"quit"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_1VU.tcl" line 30)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+------------------------------------------
+
+WARNING: HammerDB CLI for benchmark exited with code 1 due to 'disableRaw' error. Benchmark likely completed successfully. Results saved to 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_1VU_20250627_071213.txt'.
+--- Benchmark for 1 Virtual Users Finished ---
+
+
+--- Starting Benchmark for 2 Virtual Users ---
+DEBUG: Calculated rampup_minutes = 1.0
+DEBUG: Calculated duration_minutes = 5.0
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_2VU.tcl'
+Executing benchmark for 2 VUs. Results will also be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_2VU_20250627_071222.txt'
+
+--- HammerDB CLI STDOUT (from capture) ---
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (114,688 bytes)
+Database set to MSSQLServer
+
+Benchmark set to TPC-C for MSSQLServer
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Value my_hammerdb_user for connection:mssqls_uid is the same as existing value my_hammerdb_user, no change made
+
+Value MyStrongPassword123! for connection:mssqls_pass is the same as existing value MyStrongPassword123!, no change made
+
+Value windows for connection:mssqls_authentication is the same as existing value windows, no change made
+
+Value ODBC Driver 17 for SQL Server for connection:mssqls_odbc_driver is the same as existing value ODBC Driver 17 for SQL Server, no change made
+
+Value false for connection:mssqls_encrypt_connection is the same as existing value false, no change made
+
+Value false for connection:mssqls_trust_server_cert is the same as existing value false, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Value timed for tpcc:mssqls_driver is the same as existing value timed, no change made
+
+Value 8 for tpcc:mssqls_count_ware is the same as existing value 8, no change made
+
+Value 0 for tpcc:mssqls_total_iterations is the same as existing value 0, no change made
+
+Changed tpcc:mssqls_num_vu from 1 to 2 for MSSQLServer
+
+Value 1.0 for tpcc:mssqls_rampup is the same as existing value 1.0, no change made
+
+Value 5.0 for tpcc:mssqls_duration is the same as existing value 5.0, no change made
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+Vuser 3 created - WAIT IDLE
+
+3 Virtual Users Created with Monitor VU
+
+Vuser 1:RUNNING
+
+Vuser 1:DBVersion:16.0.1000.6
+
+Vuser 1:Beginning rampup time of 1.0 minutes
+
+Vuser 2:RUNNING
+
+Vuser 2:Processing 0 transactions with output suppressed...
+
+Vuser 2:FINISHED SUCCESS
+
+Vuser 3:RUNNING
+
+Vuser 3:Processing 0 transactions with output suppressed...
+
+Vuser 3:FINISHED SUCCESS
+
+Cannot detect rampup and duration times, keepalive for main thread not active
+
+Warning: a running Virtual User was terminated, any pending output has been discarded
+
+Vuser 1:FINISHED FAILED
+
+ALL VIRTUAL USERS COMPLETE
+
+vudestroy success
+
+Shutting down HammerDB CLI
+
+--- HammerDB CLI STDERR (from capture) ---
+invalid command name "disableRaw"
+    while executing
+"disableRaw"
+    (procedure "lineInput" line 5)
+    invoked from within
+"lineInput"
+    (procedure "restore" line 2)
+    invoked from within
+"restore "
+    (procedure "TclReadLine::doExit" line 12)
+    invoked from within
+"TclReadLine::doExit"
+    invoked from within
+"if [expr {[llength [info procs TclReadLine::doExit]] > 0}] {
+    #in Tcl TclReadLine is loaded call exit
+    TclReadLine::doExit
+    } else {
+    #in ..."
+    (procedure "quit" line 3)
+    invoked from within
+"quit"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_2VU.tcl" line 30)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+------------------------------------------
+
+WARNING: HammerDB CLI for benchmark exited with code 1 due to 'disableRaw' error. Benchmark likely completed successfully. Results saved to 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_2VU_20250627_071222.txt'.
+--- Benchmark for 2 Virtual Users Finished ---
+
+
+--- Starting Benchmark for 3 Virtual Users ---
+DEBUG: Calculated rampup_minutes = 1.0
+DEBUG: Calculated duration_minutes = 5.0
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_3VU.tcl'
+Executing benchmark for 3 VUs. Results will also be saved to: 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_3VU_20250627_071230.txt'
+
+--- HammerDB CLI STDOUT (from capture) ---
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (118,784 bytes)
+Database set to MSSQLServer
+
+Benchmark set to TPC-C for MSSQLServer
+
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Value my_hammerdb_user for connection:mssqls_uid is the same as existing value my_hammerdb_user, no change made
+
+Value MyStrongPassword123! for connection:mssqls_pass is the same as existing value MyStrongPassword123!, no change made
+
+Value windows for connection:mssqls_authentication is the same as existing value windows, no change made
+
+Value ODBC Driver 17 for SQL Server for connection:mssqls_odbc_driver is the same as existing value ODBC Driver 17 for SQL Server, no change made
+
+Value false for connection:mssqls_encrypt_connection is the same as existing value false, no change made
+
+Value false for connection:mssqls_trust_server_cert is the same as existing value false, no change made
+
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Value timed for tpcc:mssqls_driver is the same as existing value timed, no change made
+
+Value 8 for tpcc:mssqls_count_ware is the same as existing value 8, no change made
+
+Value 0 for tpcc:mssqls_total_iterations is the same as existing value 0, no change made
+
+Changed tpcc:mssqls_num_vu from 2 to 3 for MSSQLServer
+
+Value 1.0 for tpcc:mssqls_rampup is the same as existing value 1.0, no change made
+
+Value 5.0 for tpcc:mssqls_duration is the same as existing value 5.0, no change made
+
+Script loaded, Type "print script" to view
+
+Vuser 1 created MONITOR - WAIT IDLE
+
+Vuser 2 created - WAIT IDLE
+
+Vuser 3 created - WAIT IDLE
+
+Vuser 4 created - WAIT IDLE
+
+4 Virtual Users Created with Monitor VU
+
+Vuser 1:RUNNING
+
+Vuser 1:DBVersion:16.0.1000.6
+
+Vuser 1:Beginning rampup time of 1.0 minutes
+
+Vuser 2:RUNNING
+
+Vuser 2:Processing 0 transactions with output suppressed...
+
+Vuser 2:FINISHED SUCCESS
+
+Vuser 3:RUNNING
+
+Vuser 3:Processing 0 transactions with output suppressed...
+
+Vuser 3:FINISHED SUCCESS
+
+Vuser 4:RUNNING
+
+Vuser 4:Processing 0 transactions with output suppressed...
+
+Vuser 4:FINISHED SUCCESS
+
+Cannot detect rampup and duration times, keepalive for main thread not active
+
+Warning: a running Virtual User was terminated, any pending output has been discarded
+
+Vuser 1:FINISHED FAILED
+
+ALL VIRTUAL USERS COMPLETE
+
+vudestroy success
+
+Shutting down HammerDB CLI
+
+--- HammerDB CLI STDERR (from capture) ---
+invalid command name "disableRaw"
+    while executing
+"disableRaw"
+    (procedure "lineInput" line 5)
+    invoked from within
+"lineInput"
+    (procedure "restore" line 2)
+    invoked from within
+"restore "
+    (procedure "TclReadLine::doExit" line 12)
+    invoked from within
+"TclReadLine::doExit"
+    invoked from within
+"if [expr {[llength [info procs TclReadLine::doExit]] > 0}] {
+    #in Tcl TclReadLine is loaded call exit
+    TclReadLine::doExit
+    } else {
+    #in ..."
+    (procedure "quit" line 3)
+    invoked from within
+"quit"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\run_benchmark_8W_3VU.tcl" line 30)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+------------------------------------------
+
+WARNING: HammerDB CLI for benchmark exited with code 1 due to 'disableRaw' error. Benchmark likely completed successfully. Results saved to 'C:\Users\Administrator\Downloads\HammerDB_Results\TPCC_Results_8W_3VU_20250627_071230.txt'.
+--- Benchmark for 3 Virtual Users Finished ---
+
+HammerDB TPC-C Benchmark Script Finished.
+All generated TCL scripts are in 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts'
+All benchmark results are in 'C:\Users\Administrator\Downloads\HammerDB_Results'
+
 C:\Users\Administrator\Downloads>
