@@ -4,6 +4,12 @@ import os
 import pyodbc
 import time
 
+# --- Global Configuration (Moved to module level for broader accessibility) ---
+# Adjust this path if your HammerDB installation is in a different location
+hammerdb_cli_path = r"C:\Program Files\HammerDB\hammerdbcli.exe"
+tcl_scripts_dir = os.path.join(os.path.expanduser("~"), "Downloads", "HammerDB_TCL_Scripts")
+results_dir = os.path.join(os.path.expanduser("~"), "Downloads", "HammerDB_Results")
+
 def run_sql_query(connection_string, query, db_name="master", autocommit=True):
     """Executes a SQL query against the specified database."""
     conn = None
@@ -38,12 +44,7 @@ def main():
 
     args = parser.parse_args()
 
-    # --- Configuration ---
-    # Adjust this path if your HammerDB installation is in a different location
-    hammerdb_cli_path = r"C:\Program Files\HammerDB\hammerdbcli.exe"
-    tcl_scripts_dir = os.path.join(os.path.expanduser("~"), "Downloads", "HammerDB_TCL_Scripts")
-    results_dir = os.path.join(os.path.expanduser("~"), "Downloads", "HammerDB_Results")
-
+    # Create directories (these still need to be inside main or called after definitions)
     os.makedirs(tcl_scripts_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
 
@@ -227,61 +228,4 @@ vudestroy
 log off
 quit
 """
-        benchmark_tcl_file = os.path.join(tcl_scripts_dir, f"run_benchmark_{args.warehouses}W_{vu_count}VU.tcl")
-        with open(benchmark_tcl_file, "w") as f:
-            f.write(benchmark_run_tcl)
-        print(f"Generated TCL script: '{benchmark_tcl_file}'")
-
-        results_file = os.path.join(results_dir, f"TPCC_Results_{args.warehouses}W_{vu_count}VU_{time.strftime('%Y%m%d_%H%M%S')}.txt")
-
-        print(f"Executing benchmark for {vu_count} VUs. Results will also be saved to: '{results_file}'")
-        
-        # --- Capture ALL output and print to console immediately ---
-        benchmark_command = [hammerdb_cli_path, "tcl", "auto", benchmark_tcl_file]
-        process = None # Initialize process outside try block
-        try:
-            # Run subprocess, capturing all output
-            process = subprocess.run(benchmark_command, capture_output=True, text=True, check=False)
-            
-            # Write captured stdout and stderr to the results file
-            with open(results_file, "w") as outfile:
-                outfile.write(process.stdout)
-                outfile.write(process.stderr)
-
-            # Print all captured output to the console for immediate visibility
-            print("\n--- HammerDB CLI STDOUT (from capture) ---")
-            print(process.stdout)
-            print("--- HammerDB CLI STDERR (from capture) ---")
-            print(process.stderr)
-            print("------------------------------------------\n")
-
-            # Check specifically for the disableRaw error when exit code is 1
-            if process.returncode == 1 and "invalid command name \"disableRaw\"" in process.stderr:
-                print(f"WARNING: HammerDB CLI for benchmark exited with code 1 due to 'disableRaw' error. Benchmark likely completed successfully. Results saved to '{results_file}'.")
-                # Do not re-raise, allow loop to continue
-            elif process.returncode != 0:
-                print(f"WARNING: Benchmark for {vu_count} VUs failed with exit code {process.returncode}.")
-                print(f"Please review the full output above and in '{results_file}' for details.")
-            else: # process.returncode == 0
-                print(f"Benchmark for {vu_count} VUs completed successfully. Results saved to '{results_file}'.")
-            
-            # Print relevant metrics from the results file to console if output captured
-            if process and (process.returncode == 0 or (process.returncode == 1 and "invalid command name \"disableRaw\"" in process.stderr)):
-                try:
-                    # Read from the file just written, ensuring all content is included
-                    with open(results_file, "r") as f:
-                        for line in f:
-                            if "TPC-C Transactions" in line or "Total transactions" in line or "tpm" in line or "NOPM" in line:
-                                print(line.strip())
-                except FileNotFoundError:
-                    print(f"WARNING: Results file '{results_file}' not found after benchmark, cannot print summary.")
-
-        except FileNotFoundError:
-            print(f"ERROR: HammerDB CLI executable not found at '{hammerdb_cli_path}' during benchmark run.")
-        except Exception as e:
-            print(f"Error running HammerDB CLI for benchmark: {e.__class__.__name__}: {e}")
-        print(f"--- Benchmark for {vu_count} Virtual Users Finished ---\n")
-
-print("HammerDB TPC-C Benchmark Script Finished.")
-print(f"All generated TCL scripts are in '{tcl_scripts_dir}'")
-print(f"All benchmark results are in '{results_dir}'")
+        benchmark_tcl_file = os.path.join(tcl_scripts_dir, f"run_benchmark_{args.warehouses}
