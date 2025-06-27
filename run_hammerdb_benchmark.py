@@ -300,7 +300,6 @@ def main():
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-dbset bm tpcc
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
@@ -348,7 +347,7 @@ quit
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-dbset bm tpcc
+
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
