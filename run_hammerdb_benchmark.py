@@ -136,7 +136,7 @@ dbset bm TPC-C
 diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
-diset connection mssqls_authentication sqlserver
+diset connection mssqls_authentication SQLSEREVR
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
 diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
@@ -189,7 +189,7 @@ dbset bm TPC-C
 diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
-diset connection mssqls_authentication sqlserver
+diset connection mssqls_authentication SQLSEREVR
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
 diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
 diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
