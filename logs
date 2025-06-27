@@ -656,4 +656,282 @@ invalid command name "wait"
 An unexpected error occurred: Command failed (Exit Code: 1)
 ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
 
+C:\Users\Administrator\Downloads>"c:\Program Files\HammerDB\hammerdb.exe"
+
+C:\Users\Administrator\Downloads>"c:\Program Files\HammerDB\hammerdbcli.exe"
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (69,632 bytes)
+hammerdb>print dict
+Dictionary Settings for MSSQLServer
+connection {
+ mssqls_server             = localhost
+ mssqls_linux_server       = localhost
+ mssqls_tcp                = false
+ mssqls_port               = 1433
+ mssqls_azure              = false
+ mssqls_authentication     = sqlserver
+ mssqls_msi_object_id      = null
+ mssqls_linux_authent      = sql
+ mssqls_odbc_driver        = ODBC Driver 18 for SQL Server
+ mssqls_linux_odbc         = ODBC Driver 18 for SQL Server
+ mssqls_uid                = sa
+ mssqls_pass               = admin
+ mssqls_encrypt_connection = true
+ mssqls_trust_server_cert  = true
+}
+tpcc       {
+ mssqls_count_ware       = 1
+ mssqls_num_vu           = 1
+ mssqls_dbase            = MyTPCCDatabase
+ mssqls_imdb             = false
+ mssqls_bucket           = 1
+ mssqls_durability       = SCHEMA_AND_DATA
+ mssqls_use_bcp          = true
+ mssqls_total_iterations = 10000000
+ mssqls_raiseerror       = false
+ mssqls_keyandthink      = false
+ mssqls_checkpoint       = false
+ mssqls_driver           = timed
+ mssqls_rampup           = 2
+ mssqls_duration         = 5
+ mssqls_allwarehouse     = false
+ mssqls_timeprofile      = false
+ mssqls_async_scale      = false
+ mssqls_async_client     = 10
+ mssqls_async_verbose    = false
+ mssqls_async_delay      = 1000
+ mssqls_connect_pool     = false
+}
+
+hammerdb>
+
+hammerdb>exit
+
+C:\Users\Administrator\Downloads>del run_hammerdb_benchmark.py
+
+C:\Users\Administrator\Downloads>python run_hammerdb_benchmark.py ^    --instance-name "localhost" ^    --sa-password "Netapp1!" ^    --warehouses 8 ^    --virtual-users 1 2 3 ^    --run-time-seconds 300 ^    --ramp-up-seconds 60 ^    --db-name "MyTPCCDatabase" ^    --hammerdb-user "my_hammerdb_user" ^    --hammerdb-user-password "MyStrongPassword123!"
+Starting HammerDB TPC-C Benchmark Script...
+Attempting SQL connection test to 'localhost' for user 'sa'...
+SQL Connection Test Successful.
+
+Attempting to drop existing database 'MyTPCCDatabase' if it exists...
+Database 'MyTPCCDatabase' (ID: 5) exists. Attempting to drop it...
+Executing SQL query via pyodbc (DB: master): ALTER DATABASE [MyTPCCDatabase] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): DROP DATABASE [MyTPCCDatabase];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' dropped successfully via pyodbc.
+
+Attempting to drop existing user 'my_hammerdb_user' and login if they exist via pyodbc...
+Executing SQL query via pyodbc (DB: master): IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = N'my_hammerdb_user') DROP LOGIN [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Login 'my_hammerdb_user' dropped (if it existed) via pyodbc.
+Database 'MyTPCCDatabase' does not exist, skipping user drop from database.
+User 'my_hammerdb_user' and login cleanup complete.
+
+Creating database 'MyTPCCDatabase' and login/user 'my_hammerdb_user' via pyodbc...
+Executing SQL query via pyodbc (DB: master): CREATE DATABASE [MyTPCCDatabase]; ALTER DATABASE [MyTPCCDatabase] SET RECOVERY FULL; ALTER DATABASE [MyTPCCDatabase] SET COMPATIBILITY_LEVEL = 160;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: master): CREATE LOGIN [my_hammerdb_user] WITH PASSWORD = N'MyStrongPassword123!', CHECK_POLICY = OFF;
+SQL query executed successfully via pyodbc.
+Executing SQL query via pyodbc (DB: MyTPCCDatabase): CREATE USER [my_hammerdb_user] FOR LOGIN [my_hammerdb_user]; ALTER ROLE [db_owner] ADD MEMBER [my_hammerdb_user];
+SQL query executed successfully via pyodbc.
+Database 'MyTPCCDatabase' and user 'my_hammerdb_user' created successfully via pyodbc.
+
+Generating TCL script for schema build for 8 warehouses...
+Generated TCL script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl'
+Running schema build for 8 warehouses (this may take some time)...
+Running HammerDB CLI with script: 'C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl' (using v5.0 syntax)
+Executing: C:\Program Files\HammerDB\hammerdbcli.exe tcl auto C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl
+STDOUT:
+HammerDB CLI v5.0
+Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
+Type "help" for a list of commands
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (69,632 bytes)
+Database set to MSSQLServer
+
+Benchmark set to TPC-C for MSSQLServer
+
+Dictionary Settings for MSSQLServer
+connection {
+ mssqls_server             = localhost
+ mssqls_linux_server       = localhost
+ mssqls_tcp                = false
+ mssqls_port               = 1433
+ mssqls_azure              = false
+ mssqls_authentication     = sqlserver
+ mssqls_msi_object_id      = null
+ mssqls_linux_authent      = sql
+ mssqls_odbc_driver        = ODBC Driver 18 for SQL Server
+ mssqls_linux_odbc         = ODBC Driver 18 for SQL Server
+ mssqls_uid                = sa
+ mssqls_pass               = admin
+ mssqls_encrypt_connection = true
+ mssqls_trust_server_cert  = true
+}
+tpcc       {
+ mssqls_count_ware       = 1
+ mssqls_num_vu           = 1
+ mssqls_dbase            = MyTPCCDatabase
+ mssqls_imdb             = false
+ mssqls_bucket           = 1
+ mssqls_durability       = SCHEMA_AND_DATA
+ mssqls_use_bcp          = true
+ mssqls_total_iterations = 10000000
+ mssqls_raiseerror       = false
+ mssqls_keyandthink      = false
+ mssqls_checkpoint       = false
+ mssqls_driver           = timed
+ mssqls_rampup           = 2
+ mssqls_duration         = 5
+ mssqls_allwarehouse     = false
+ mssqls_timeprofile      = false
+ mssqls_async_scale      = false
+ mssqls_async_client     = 10
+ mssqls_async_verbose    = false
+ mssqls_async_delay      = 1000
+ mssqls_connect_pool     = false
+}
+Value localhost for connection:mssqls_server is the same as existing value localhost, no change made
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_user" doesn't, key "mssqls_user" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "connection" for MSSQLServer exists but key "mssqls_password" doesn't, key "mssqls_password" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Value sqlserver for connection:mssqls_authentication is the same as existing value sqlserver, no change made
+
+Dictionary Settings for MSSQLServer
+connection {
+ mssqls_server             = localhost
+ mssqls_linux_server       = localhost
+ mssqls_tcp                = false
+ mssqls_port               = 1433
+ mssqls_azure              = false
+ mssqls_authentication     = sqlserver
+ mssqls_msi_object_id      = null
+ mssqls_linux_authent      = sql
+ mssqls_odbc_driver        = ODBC Driver 18 for SQL Server
+ mssqls_linux_odbc         = ODBC Driver 18 for SQL Server
+ mssqls_uid                = sa
+ mssqls_pass               = admin
+ mssqls_encrypt_connection = true
+ mssqls_trust_server_cert  = true
+}
+tpcc       {
+ mssqls_count_ware       = 1
+ mssqls_num_vu           = 1
+ mssqls_dbase            = MyTPCCDatabase
+ mssqls_imdb             = false
+ mssqls_bucket           = 1
+ mssqls_durability       = SCHEMA_AND_DATA
+ mssqls_use_bcp          = true
+ mssqls_total_iterations = 10000000
+ mssqls_raiseerror       = false
+ mssqls_keyandthink      = false
+ mssqls_checkpoint       = false
+ mssqls_driver           = timed
+ mssqls_rampup           = 2
+ mssqls_duration         = 5
+ mssqls_allwarehouse     = false
+ mssqls_timeprofile      = false
+ mssqls_async_scale      = false
+ mssqls_async_client     = 10
+ mssqls_async_verbose    = false
+ mssqls_async_delay      = 1000
+ mssqls_connect_pool     = false
+}
+Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
+
+Clearing Script, reload script to activate new setting
+
+Script cleared
+
+Changed tpcc:mssqls_driver from timed to test for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "count_ware" doesn't, key "count_ware" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "total_iterations" doesn't, key "total_iterations" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Dictionary "tpcc" for MSSQLServer exists but key "tpcc_vu" doesn't, key "tpcc_vu" cannot be found in any MSSQLServer dictionary
+
+Type "print dict" for valid dictionaries and keys for MSSQLServer
+
+Script loaded, Type "print script" to view
+
+Script cleared
+
+Building 1 Warehouses(s) with 1 Virtual User
+Ready to create a 1 Warehouse MS SQL Server TPROC-C schema
+in host LOCALHOST in database MYTPCCDATABASE?
+
+Enter yes or no: replied yes
+
+Vuser 1 created - WAIT IDLE
+
+Vuser 1:RUNNING
+
+Vuser 1:Error: neither WINDOWS, ENTRA or SQL Authentication has been specified
+
+Vuser 1:CREATING MYTPCCDATABASE SCHEMA
+
+Error in Virtual User 1: Connection to DRIVER=ODBC Driver 18 for SQL Server;SERVER=localhost;ENCRYPT=yes;TRUSTSERVERCERTIFICATE=yes could not be established : [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified
+(connecting to database)
+
+Vuser 1:FINISHED FAILED
+
+ALL VIRTUAL USERS COMPLETE
+
+
+STDERR:
+invalid command name "disconnect"
+    while executing
+"disconnect"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 29)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+ERROR: Command failed with exit code 1
+Error details:
+invalid command name "disconnect"
+    while executing
+"disconnect"
+    (file "C:\Users\Administrator\Downloads\HammerDB_TCL_Scripts\build_schema_8W.tcl" line 29)
+    invoked from within
+"source $autostart::autoloadscript"
+    ("eval" body line 2)
+    invoked from within
+"eval $cli_common_init"
+    invoked from within
+"if { $lang == "tcl" } {
+  append cli_common_init $cli_tcl_append
+  eval $cli_common_init
+  #Initialise CLI in Python
+} elseif { $lang eq "python" } {
+..."
+    (file "//zipfs:/app/main.tcl" line 146)
+
+An unexpected error occurred: Command failed (Exit Code: 1)
+ERROR: Error running HammerDB CLI for schema build: Command failed (Exit Code: 1)
+
 C:\Users\Administrator\Downloads>
