@@ -1,7 +1,7 @@
 HammerDB CLI v5.0
 Copyright © HammerDB Ltd hosted by tpc.org 2019-2025
 Type "help" for a list of commands
-Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (86,016 bytes)
+Initialized Jobs on-disk database C:/Users/ADMINI~1/AppData/Local/Temp/hammer.DB using existing tables (98,304 bytes)
 Database set to MSSQLServer
 
 Benchmark set to TPC-C for MSSQLServer
@@ -22,68 +22,15 @@ Value false for connection:mssqls_trust_server_cert is the same as existing valu
 
 Value MyTPCCDatabase for tpcc:mssqls_dbase is the same as existing value MyTPCCDatabase, no change made
 
-Clearing Script, reload script to activate new setting
-
-Script cleared
-
-Changed tpcc:mssqls_driver from test to timed for MSSQLServer
+Value timed for tpcc:mssqls_driver is the same as existing value timed, no change made
 
 Value 8 for tpcc:mssqls_count_ware is the same as existing value 8, no change made
 
-Changed tpcc:mssqls_total_iterations from 1 to 0 for MSSQLServer
+Value 0 for tpcc:mssqls_total_iterations is the same as existing value 0, no change made
 
-Value 1 for tpcc:mssqls_num_vu is the same as existing value 1, no change made
+Changed tpcc:mssqls_num_vu from 1 to 2 for MSSQLServer
 
-Changed tpcc:mssqls_rampup from 60 to 1 for MSSQLServer
+Value 1.0 for tpcc:mssqls_rampup is the same as existing value 1.0, no change made
 
-Changed tpcc:mssqls_duration from 300 to 5 for MSSQLServer
-
-Script loaded, Type "print script" to view
-
-Vuser 1 created MONITOR - WAIT IDLE
-
-Vuser 2 created - WAIT IDLE
-
-2 Virtual Users Created with Monitor VU
-
-Vuser 1:RUNNING
-
-Vuser 1:DBVersion:16.0.1000.6
-
-Vuser 1:Beginning rampup time of 1 minutes
-
-Vuser 2:RUNNING
-
-Vuser 2:Processing 0 transactions with output suppressed...
-
-Vuser 2:FINISHED SUCCESS
-
-Vuser 1:Rampup 1 minutes complete ...
-
-Vuser 1:Rampup complete, Taking start Transaction Count.
-
-Vuser 1:Timing test period of 5 in minutes
-
-Vuser 1:1 ...,
-
-Vuser 1:2 ...,
-
-Vuser 1:3 ...,
-
-Vuser 1:4 ...,
-
-Vuser 1:5 ...,
-
-Vuser 1:Test complete, Taking end Transaction Count.
-
-Vuser 1:1 Active Virtual Users configured
-
-Vuser 1:TEST RESULT : System achieved 0 NOPM from 1 SQL Server TPM
-
-Vuser 1:FINISHED SUCCESS
-
-ALL VIRTUAL USERS COMPLETE
-
-Usage: print [db|bm|dict|generic|script|vuconf|vucreated|vustatus|vucomplete|datagen|tcconf]
-vudestroy success
+Value 5.0 for tpcc:mssqls_duration is the same as existing value 5.0, no change made
 
