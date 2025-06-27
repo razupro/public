@@ -125,7 +125,7 @@ def main():
         return
     print(f"Database '{args.db_name}' and user '{args.hammerdb_user}' created successfully via pyodbc.")
 
-    # --- Step 4: Generate and Run Schema Build TCL Script ---
+# --- Generate TCL script for Schema Build ---
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
@@ -137,7 +137,9 @@ diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
-diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server" ; # Explicitly set ODBC Driver 17
+diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
+diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
+diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
@@ -177,10 +179,7 @@ quit
         print(f"ERROR: Error running HammerDB CLI for schema build: {e}")
         return
 
-    # --- Step 5: Generate and Run Benchmark TCL Scripts for each VU count ---
-    print("\n--- Starting Benchmark Runs ---")
-    for vu_count in args.virtual_users:
-        print(f"\nGenerating TCL script for benchmark run with {vu_count} VUs...")
+# Generate TCL script for Benchmark Run
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
@@ -191,7 +190,9 @@ diset connection mssqls_server {args.instance_name}
 diset connection mssqls_uid {args.hammerdb_user}
 diset connection mssqls_pass {args.hammerdb_user_password}
 diset connection mssqls_authentication sqlserver
-diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server" ; # Explicitly set ODBC Driver 17
+diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
+diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
+diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
