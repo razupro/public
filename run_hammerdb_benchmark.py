@@ -295,31 +295,37 @@ def main():
         print(f"ERROR: Error creating database or user via pyodbc: {e}")
         exit(1)
 
+
 # --- Generate TCL script for Schema Build ---
     print(f"\nGenerating TCL script for schema build for {args.warehouses} warehouses...")
     schema_build_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
+dbset bm TPC-C ; # Corrected benchmark name from tpcc to TPC-C
+
+# --- DEBUGGING: Print dictionary structure ---
+print dict
+# --- END DEBUGGING ---
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_user {args.hammerdb_user}
-diset connection mssqls_password {args.hammerdb_user_password}
-diset connection mssqls_authentication sqlserver ; # Authentication is a connection parameter
+diset connection mssqls_user {args.hammerdb_user} ; # Keeping as per sample, despite warnings
+diset connection mssqls_password {args.hammerdb_user_password} ; # Keeping as per sample, despite warnings
+diset connection mssqls_authentication sqlserver
+
+# --- DEBUGGING: Print dictionary structure ---
+print dict
+# --- END DEBUGGING ---
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
-diset tpcc mssqls_dbase {args.db_name} ; # Database name is a tpcc parameter
-diset tpcc tpcc_driver test ; # Use 'test' driver for schema build
-diset tpcc count_ware {args.warehouses}
-diset tpcc total_iterations 1
-diset tpcc tpcc_vu 1 ; # For schema build
+diset tpcc mssqls_dbase {args.db_name}
+diset tpcc mssqls_driver test ; # Use 'test' driver for schema build
+diset tpcc count_ware {args.warehouses} ; # Keeping as per sample, despite warnings
+diset tpcc total_iterations 1 ; # Keeping as per sample, despite warnings
+diset tpcc tpcc_vu 1 ; # Keeping as per sample, despite warnings
 
 loadscript
-vuset vu 1 ; # Corrected vuset syntax: 'vuset vu <count>'
-vucreate
-buildschema
-wait for buildschema complete
-vudestroy
+buildschema ; # Removed vuset/vucreate and wait command
 disconnect
 quit
 """
@@ -347,20 +353,20 @@ quit
         benchmark_run_tcl = f"""
 # Set global database and benchmark type using dbset (HammerDB 5.0 strict syntax)
 dbset db mssqls
-
+dbset bm TPC-C ; # Corrected benchmark name from tpcc to TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_user {args.hammerdb_user}
-diset connection mssqls_password {args.hammerdb_user_password}
+diset connection mssqls_user {args.hammerdb_user} ; # Keeping as per sample, despite warnings
+diset connection mssqls_password {args.hammerdb_user_password} ; # Keeping as per sample, despite warnings
 diset connection mssqls_authentication sqlserver
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
-diset tpcc tpcc_driver timed ; # Use 'timed' driver for benchmark run
-diset tpcc count_ware {args.warehouses}
-diset tpcc total_iterations 1
-diset tpcc tpcc_vu {vu_count} ; # Set based on current VU count for the run
+diset tpcc mssqls_driver timed ; # Use 'timed' driver for benchmark run
+diset tpcc count_ware {args.warehouses} ; # Keeping as per sample, despite warnings
+diset tpcc total_iterations 1 ; # Keeping as per sample, despite warnings
+diset tpcc tpcc_vu {vu_count} ; # Keeping as per sample, despite warnings
 diset tpcc mssqls_rampup {args.ramp_up_seconds}
 diset tpcc mssqls_duration {args.run_time_seconds}
 
