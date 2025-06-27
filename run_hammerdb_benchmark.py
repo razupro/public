@@ -134,12 +134,12 @@ dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid {args.hammerdb_user}
-diset connection mssqls_pass {args.hammerdb_user_password}
-diset connection mssqls_authentication SQLSEREVR
+diset connection mssqls_uid "sa" ; # TEMPORARY: Testing with 'sa' user
+diset connection mssqls_pass "Netapp1!" ; # TEMPORARY: Testing with 'sa' password
+diset connection mssqls_authentication SQLSERVER
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
-diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
-diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
+diset connection mssqls_encrypt_connection false
+diset connection mssqls_trust_server_cert false
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
@@ -187,12 +187,12 @@ dbset bm TPC-C
 
 # Set MSSQL connection parameters using diset (HammerDB 5.0 syntax - 'connection' group)
 diset connection mssqls_server {args.instance_name}
-diset connection mssqls_uid {args.hammerdb_user}
-diset connection mssqls_pass {args.hammerdb_user_password}
-diset connection mssqls_authentication SQLSEREVR
+diset connection mssqls_uid "sa" ; # TEMPORARY: Testing with 'sa' user
+diset connection mssqls_pass "Netapp1!" ; # TEMPORARY: Testing with 'sa' password
+diset connection mssqls_authentication SQLSERVER
 diset connection mssqls_odbc_driver "ODBC Driver 17 for SQL Server"
-diset connection mssqls_encrypt_connection false ; # Disable encryption for testing
-diset connection mssqls_trust_server_cert false ; # Disable trust server certificate for testing
+diset connection mssqls_encrypt_connection false
+diset connection mssqls_trust_server_cert false
 
 # Set TPC-C benchmark specific parameters using diset (HammerDB 5.0 syntax - 'tpcc' group)
 diset tpcc mssqls_dbase {args.db_name}
